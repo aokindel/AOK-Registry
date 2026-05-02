@@ -1,53 +1,65 @@
-# AOK Registry — Social Network UI
+# AOK Registry
 
-A Facebook-inspired social network web app with a three-column shell, news feed, stories, reactions, comments, notifications, messenger, search, and dark mode — all in a single self-contained HTML file.
+A clean, green-and-white social network UI. Sign up, share posts, react and comment, all from a single self-contained HTML file.
 
 ## Features
 
-- **Top navigation** — logo, search with type-ahead, tabbed nav, notifications, messenger, profile menu
-- **Left rail** — profile shortcut, Friends / Groups / Marketplace / Watch / Memories / Saved / Pages / Events, your shortcuts
-- **Right rail** — sponsored, birthdays, contacts with online indicators
-- **Stories** — horizontal carousel + full-screen viewer with auto-advance, keyboard nav, pause
-- **Post composer** — text + image upload (preview), audience picker, posts persist via localStorage
-- **News feed** — text, single image, 2/3/4-image grids, link cards, sponsored
-- **Reactions** — full 7-reaction picker (Like, Love, Care, Haha, Wow, Sad, Angry)
+- **Welcome / sign-up flow** — first visitor enters name (+ optional email/bio) and becomes the device's account
+- **Multi-account on one device** — friends visiting on the same browser can each create their own account and switch between them
+- **Post composer** — text + image upload, persists to localStorage
+- **Reactions** — full 7-emoji picker (Like, Love, Care, Haha, Wow, Sad, Angry)
 - **Comments** — expandable threads, write & post
-- **Infinite scroll** — loads 5 more posts as you near the bottom
-- **Dark mode** — toggle persists across sessions
-- **Keyboard shortcuts** — `/` focuses search, `Esc` closes modals, `←/→` navigates stories
-- **Zero dependencies** — single HTML file, no build step
+- **News feed** with empty state when there are no posts yet
+- **People rail** — every account on this device shows up here
+- **Notifications** with unread badge
+- **Search** — type-ahead across people on this device + post text
+- **Edit profile** — change name, email, bio anytime
+- **Dark mode** — toggle in profile menu, persists
+- **Keyboard shortcuts** — `/` focuses search, `Esc` closes modals
+- **Zero dependencies** — single `index.html`, no build step, no external CDNs
+
+## Important: this is frontend-only
+
+All accounts and posts are stored in your **browser's localStorage**. That means:
+
+- Each visitor on each device has their own private feed.
+- Friends on different devices **cannot see each other's posts** unless they are at the same browser.
+- Clearing browser data wipes the account.
+
+To make this a real social network where friends on different devices can see each other's posts, you'd need to wire up a backend (Supabase, Firebase, or a serverless KV store like Vercel KV). The frontend is structured so you could swap localStorage for an API client without rewriting the UI.
 
 ## Run Locally
 
-Just open `index.html` in any modern browser:
+```powershell
+# Windows
+start index.html
+
+# Or serve over http (recommended)
+python -m http.server 8080
+# then visit http://localhost:8080
+```
 
 ```bash
 # macOS / Linux
 open index.html
-
-# Windows
-start index.html
-
-# Or serve with any static file server
+# or
 npx serve .
-python -m http.server 8080
 ```
 
-## Deploy to Vercel
+## Deploy
 
+### Vercel
 ```bash
 npm i -g vercel
 cd "AOK Registry"
 vercel
 ```
+Or via the dashboard: https://vercel.com/new → Import `aokindel/AOK-Registry` → Deploy.
 
-Or import the folder via the Vercel dashboard — `vercel.json` is included.
-
-## Deploy to GitHub Pages
-
+### GitHub Pages
 1. Push to GitHub
-2. Settings → Pages → Source: `main` / root
-3. Live at `https://<username>.github.io/<repo>/`
+2. Repo Settings → Pages → Source: `main` / `/` (root)
+3. Live at `https://<username>.github.io/AOK-Registry/`
 
 ## Project Structure
 
@@ -61,23 +73,12 @@ AOK Registry/
 └── IMPLEMENTATION.md   # Build plan
 ```
 
-## Data Sources
+## Reset
 
-- **Avatars**: `api.dicebear.com` — deterministic per seed, free, no key
-- **Photos**: `picsum.photos` — placeholder images, deterministic by seed
-
-If both are blocked / offline, avatars fall back to colored initials and image slots show a gradient placeholder. The app remains fully interactive offline.
-
-## Customization
-
-Open `index.html`, scroll to the `STATIC_DATA` block near the top of the `<script>`. Edit the `USERS`, `POSTS`, `STORIES`, `NOTIFICATIONS`, `MESSAGES`, `BIRTHDAYS`, `GROUPS`, or `MARKETPLACE` arrays to change the seed content.
-
-To reset persisted state (created posts, reactions, comments, theme): open DevTools → Application → Local Storage → clear, or run `localStorage.clear()` in the console.
+To wipe local accounts/posts and start fresh:
+- DevTools → Application → Local Storage → clear, or
+- Run `localStorage.clear()` in the console
 
 ## Browser Support
 
 Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
-
----
-
-Built with HTML, CSS, JavaScript · DiceBear · Picsum

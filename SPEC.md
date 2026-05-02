@@ -1,96 +1,85 @@
-# AOK Registry — Social Network Web App
+# AOK Registry — Specification
 
 ## Overview
 
-A web-based social network UI inspired by Facebook's modern feed layout:
-three-column shell (rails + feed), top navigation with search, stories
-strip, post composer, infinite-scroll news feed, reactions, comments,
-notifications, messenger, and dark mode.
+A green-and-white social network UI. Visitors sign up on first visit, then post, react, and comment. All state is stored in `localStorage` — no backend.
 
 ---
 
 ## Feature Requirements
 
+### Welcome / Sign-up
+
+- First visit: full-screen overlay with branded header, name (required), email + bio (optional)
+- "Already have an account on this device?" → sign-in mode that picks an existing local account by name
+- All accounts on the device are stored together; current logged-in user is `state.me`
+- Sign out clears `state.me` and re-shows the welcome overlay
+
 ### Top Navigation
 
 | Region | Contents |
 |---|---|
-| Left | Facebook logo, search box (with type-ahead dropdown) |
-| Center | Tabbed nav: Home · Friends · Watch · Marketplace · Groups · Gaming |
-| Right | Menu, Marketplace, Notifications, Messenger, Profile (with dropdown) |
+| Left | AOK logo, "Registry" wordmark, search box (type-ahead) |
+| Center | Tabs: Home · People · Groups · Saved |
+| Right | Notifications, Profile (with dropdown) |
 
-### Left Rail (sticky)
+### Left Rail
 
 - Profile shortcut (avatar + name)
-- Friends, Groups, Marketplace, Watch, Memories, Saved, Pages, Events
-- Your Shortcuts (groups, pages the user follows)
-- Footer links (Privacy · Terms · Cookies · Ad Choices)
+- People, Groups, Memories, Saved, Events
+- Invite-friends prompt with the share-this-URL hint
+- Footer: Privacy / Terms / About
 
 ### Center Feed
 
-1. **Stories carousel** — "Create Story" tile + 8+ friend story tiles
-2. **Post composer** — input row + Live · Photo · Feeling buttons
-3. **News feed** — chronological mix of:
-   - Text-only posts
-   - Photo posts (single image)
-   - Multi-image posts (2x2 grid, "+N" overlay)
-   - Link previews
-   - Sponsored / Suggested for you
-   - Friend-request suggestions inline
-4. **Infinite scroll** — loads 5 more posts as user nears bottom
+1. **Stories carousel** — Create-story tile + placeholder slots (no fake stories)
+2. **Post composer** — input, Photo / Tag / Feeling buttons
+3. **News feed** — user-created posts only, with rich empty state when empty
 
-### Right Rail (sticky)
+### Right Rail
 
-- Sponsored ad block (rotating)
-- Birthdays (today + this week)
-- Contacts list (online dot indicator)
-- Group chats
+- People list — every other account on this device
+- Quick-link section (Create post, Find people, Notifications)
 
-### Post Card Anatomy
+### Post Card
 
 ```
-┌───────────────────────────────────────────────────┐
-│ avatar  Author Name                       ··· ✕  │
-│         2h · 🌍                                   │
-├───────────────────────────────────────────────────┤
-│ Text content...                                  │
-│                                                  │
-│ [ optional image / image grid ]                  │
-├───────────────────────────────────────────────────┤
-│ 👍❤️😆  Alice and 24 others       7 comments  3 shares │
-├───────────────────────────────────────────────────┤
-│   👍 Like      💬 Comment      ↗ Share           │
-├───────────────────────────────────────────────────┤
-│  avatar  Comment thread...                        │
-│  [ Write a comment...                          🙂] │
-└───────────────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│ avatar  Author Name                ··· ✕ │
+│         2h · 🌍                          │
+├──────────────────────────────────────────┤
+│ Text content                             │
+│ [optional uploaded image]                │
+├──────────────────────────────────────────┤
+│ 👍❤️😆 24            5 comments          │
+├──────────────────────────────────────────┤
+│   👍 Like     💬 Comment     ↗ Share     │
+├──────────────────────────────────────────┤
+│  avatar  Comment thread...               │
+│  [Write a comment...                    ]│
+└──────────────────────────────────────────┘
 ```
 
 ### Reactions
 
-Long-press / hover on Like to reveal the reaction picker:
-👍 Like · ❤️ Love · 🤗 Care · 😆 Haha · 😮 Wow · 😢 Sad · 😡 Angry
+Hover the Like button to reveal: 👍 Like · ❤️ Love · 🤗 Care · 😆 Haha · 😮 Wow · 😢 Sad · 😡 Angry. Counts and the user's choice persist in `localStorage`.
 
-### Stories Viewer
+### Edit Profile
 
-Click a story to open full-screen viewer:
-- Progress segments at top (one per story in the user's set)
-- Auto-advance every 5 seconds
-- Click left/right halves to navigate, ESC to close
-- Tap-and-hold to pause (touch); spacebar pauses (desktop)
+Profile dropdown → "Edit profile" → modal with name, email, bio. Saving updates both `state.me` and the entry in `state.users`.
 
-### Notifications & Messenger Dropdowns
+### Notifications
 
-- Click bell icon: panel of 6 recent notifications (likes, comments, friend requests)
-- Click messenger icon: panel of recent chats with online status, unread badge
+A welcome notification is generated on first sign-up. Future expansion can append to `state.notifications` for likes/comments. Unread count appears as a badge on the bell icon.
 
-### Search Dropdown
+### Search
 
-Type-ahead matches across users, groups, and pages from seed data.
+- Empty query: shows local accounts
+- Typed query: matches on user names + post text, grouped as "People" and "Posts"
 
 ### Dark Mode
 
-Toggle in profile dropdown; persisted in localStorage.
+Toggle in profile dropdown; persisted in `state.theme`.
 
 ---
 
@@ -98,19 +87,17 @@ Toggle in profile dropdown; persisted in localStorage.
 
 | Token | Light | Dark |
 |---|---|---|
-| Background | `#f0f2f5` | `#18191a` |
-| Card | `#ffffff` | `#242526` |
-| Hover | `#f2f2f2` | `#3a3b3c` |
-| Border | `#ced0d4` | `#3e4042` |
-| Text primary | `#050505` | `#e4e6eb` |
-| Text secondary | `#65676b` | `#b0b3b8` |
-| Brand blue | `#1877f2` | `#2374e1` |
-| Accent green | `#42b72a` | `#42b72a` |
-| Accent red | `#f02849` | `#f02849` |
+| Background | `#f3f7f4` | `#0e1612` |
+| Card | `#ffffff` | `#1a221c` |
+| Hover | `#ecf2ed` | `#2a342d` |
+| Border | `#cdd8d1` | `#2c3830` |
+| Text primary | `#0d1c12` | `#e2ebe5` |
+| Text secondary | `#4d5e54` | `#a3b3a8` |
+| Brand green | `#1d8a3e` | `#2db05c` |
+| Accent red (love/notif) | `#d23a4d` | `#d23a4d` |
 
 Typography: `'Segoe UI', 'Helvetica Neue', system-ui, sans-serif`
-Border radius: `8px` (cards), `18px` (pill buttons), `50%` (avatars)
-Shadow: `0 1px 2px rgba(0,0,0,0.1)` (light) / `none` (dark)
+Avatars: locally-generated initials on a hue-hashed colored background — no third-party avatar service.
 
 ---
 
@@ -120,22 +107,24 @@ Shadow: `0 1px 2px rgba(0,0,0,0.1)` (light) / `none` (dark)
 
 | Layer | Choice | Reason |
 |---|---|---|
-| Runtime | Vanilla HTML/CSS/JS (single file) | Zero dependencies, runs in any browser |
-| Avatars | DiceBear `avataaars` API (CDN URLs) | Free, no key, deterministic per seed |
-| Photos | `picsum.photos` | Free placeholder images, deterministic by seed |
-| Icons | Inline SVG | Pixel-perfect, themable via `currentColor` |
-| Persistence | `localStorage` | Likes / posts / dark-mode survive refresh |
+| Runtime | Vanilla HTML/CSS/JS, single file | Zero deps, no build, no CDN |
+| Storage | `localStorage` (`aok-registry-state-v1`) | Survives refresh; private to each browser |
+| Avatars | Inline initials + HSL hash of name | No external service; fully offline |
+| Icons | Inline SVG | Themable via `currentColor` |
 
-### Data Flow
+### State Shape
 
-```
-Browser load
-  └── seed `state` from STATIC_DATA + localStorage
-        └── render(): paint feed / rails / stories from state
-              └── user action (like/comment/post)
-                    └── mutate state
-                          └── re-render affected card
-                                └── persist to localStorage
+```js
+{
+  me: { id, name, email, bio, color, joinedAt } | null,
+  users: [ { id, name, email, bio, color, joinedAt } ],
+  posts: [ { id, authorId, time, text, images } ],
+  reactions: { [postId]: reactionId },
+  reactionCounts: { [postId]: { [reactionId]: number } },
+  comments: { [postId]: [ { id, authorId, text, time } ] },
+  notifications: [ { id, text, time, unread } ],
+  theme: "light" | "dark"
+}
 ```
 
 ### Files
@@ -143,20 +132,27 @@ Browser load
 ```
 AOK Registry/
 ├── SPEC.md              ← this document
-├── IMPLEMENTATION.md    ← phased build plan
-├── README.md            ← quick-start
 ├── index.html           ← entire app (HTML + CSS + JS)
-├── vercel.json          ← deploy config
-└── .gitignore
+├── IMPLEMENTATION.md    ← phased build plan
+└── README.md            ← run / deploy
 ```
 
 ---
 
 ## Non-Functional Requirements
 
-- Works offline (no network calls except DiceBear/Picsum CDN images)
-- No build step — open `index.html` directly
-- Responsive at ≥1024px (single column collapses below)
-- Accessible: keyboard nav for stories/dropdowns, ARIA labels on icon buttons
-- Persists user-created posts & likes in localStorage
-- Page weight target: <60 KB HTML (excluding lazy-loaded images)
+- Fully offline (no network calls of any kind)
+- No build step
+- Responsive at ≥1024px (rails collapse below)
+- Accessible: keyboard nav for dropdowns/modals, ARIA-friendly markup
+- Honest: a banner in the welcome dialog and README notes that state is per-device only
+
+---
+
+## Future Work (when a backend is added)
+
+- Replace `localStorage` reads/writes with API calls (Supabase Auth + Postgres or Firebase)
+- Email verification on sign-up
+- Friend requests + privacy controls
+- Real stories with auto-expire
+- Real cross-device notifications
