@@ -1,0 +1,2628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AOK Registry</title>
+<meta name="description" content="AOK Registry — a Facebook-inspired social network UI built as a single self-contained HTML file." />
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><circle cx='18' cy='18' r='18' fill='%231877f2'/><path d='M21 19h2.7l.4-3.4H21v-2.2c0-1 .3-1.7 1.7-1.7H24V8.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2h-2.6V19h2.6v9H21v-9z' fill='%23fff'/></svg>" />
+<style>
+/* ================================================================
+   AOK REGISTRY — single-file HTML/CSS/JS
+   Palette tokens, typography, layout, and components
+   ================================================================ */
+
+:root {
+  --bg:           #f0f2f5;
+  --card:         #ffffff;
+  --card-2:       #f7f8fa;
+  --hover:        #f2f2f2;
+  --hover-strong: #e4e6eb;
+  --border:       #ced0d4;
+  --border-soft:  #e4e6eb;
+  --text:         #050505;
+  --text-2:       #65676b;
+  --text-3:       #8a8d91;
+  --brand:        #1877f2;
+  --brand-hover:  #166fe5;
+  --green:        #42b72a;
+  --red:          #f02849;
+  --like:         #1877f2;
+  --love:         #f33e58;
+  --shadow-sm:    0 1px 2px rgba(0,0,0,0.10);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.15);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.20);
+  --radius:       8px;
+  --radius-lg:    12px;
+  --header-h:     56px;
+  --tab-active:   #1877f2;
+  --tab-inactive: #65676b;
+  --skeleton:     linear-gradient(90deg, #ebedef 25%, #e4e6eb 50%, #ebedef 75%);
+}
+
+body[data-theme="dark"] {
+  --bg:           #18191a;
+  --card:         #242526;
+  --card-2:       #3a3b3c;
+  --hover:        #3a3b3c;
+  --hover-strong: #4e4f50;
+  --border:       #3e4042;
+  --border-soft:  #3e4042;
+  --text:         #e4e6eb;
+  --text-2:       #b0b3b8;
+  --text-3:       #8a8d91;
+  --brand:        #2374e1;
+  --brand-hover:  #4599ff;
+  --shadow-sm:    none;
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg:    0 12px 28px rgba(0,0,0,0.6);
+  --skeleton:     linear-gradient(90deg, #2a2b2d 25%, #3a3b3c 50%, #2a2b2d 75%);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.34;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.15s, color 0.15s;
+}
+button { font-family: inherit; }
+img { display: block; max-width: 100%; }
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== Header ===== */
+header.topbar {
+  position: sticky; top: 0; z-index: 100;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: var(--header-h);
+  padding: 0 16px;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+.bar-left  { display: flex; align-items: center; gap: 8px; }
+.bar-right { display: flex; align-items: center; gap: 8px; justify-self: end; }
+.bar-mid   { display: flex; align-items: center; gap: 4px; }
+
+.logo {
+  width: 40px; height: 40px;
+  background: var(--brand);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.logo svg { width: 32px; height: 32px; fill: #fff; }
+
+.search-wrap {
+  position: relative;
+  display: flex; align-items: center;
+  background: var(--hover-strong);
+  border-radius: 999px;
+  padding: 8px 12px;
+  width: 240px;
+}
+body[data-theme="dark"] .search-wrap { background: #3a3b3c; }
+.search-wrap svg { width: 16px; height: 16px; color: var(--text-2); margin-right: 6px; flex-shrink: 0; }
+.search-wrap input {
+  background: transparent; border: 0; outline: none;
+  color: var(--text); width: 100%; font-size: 15px;
+}
+
+.tab {
+  width: 112px; height: 56px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  color: var(--tab-inactive);
+  border-bottom: 3px solid transparent;
+  position: relative;
+  transition: background 0.1s;
+  border-radius: var(--radius);
+  margin: 0 2px;
+}
+.tab:hover { background: var(--hover); }
+.tab svg { width: 28px; height: 28px; }
+.tab.active { color: var(--tab-active); border-bottom-color: var(--tab-active); border-radius: 0; }
+.tab.active:hover { background: transparent; }
+.tab .badge {
+  position: absolute; top: 6px; right: 22px;
+  background: var(--red); color: #fff;
+  font-size: 11px; padding: 2px 5px; border-radius: 10px;
+  font-weight: 600;
+  min-width: 18px; text-align: center;
+}
+
+.icon-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--hover-strong);
+  color: var(--text);
+  display: grid; place-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.1s;
+}
+body[data-theme="dark"] .icon-btn { background: #3a3b3c; }
+.icon-btn:hover { background: #d8dadf; }
+body[data-theme="dark"] .icon-btn:hover { background: #4e4f50; }
+.icon-btn svg { width: 20px; height: 20px; }
+.icon-btn .badge {
+  position: absolute; top: -2px; right: -2px;
+  background: var(--red); color: #fff;
+  font-size: 11px; padding: 2px 5px; border-radius: 10px;
+  font-weight: 600; min-width: 18px; text-align: center;
+  border: 2px solid var(--card);
+}
+.icon-btn.active { color: var(--brand); }
+
+/* ===== Layout ===== */
+main.shell {
+  display: grid;
+  grid-template-columns: 360px 1fr 360px;
+  gap: 16px;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 16px;
+  align-items: start;
+}
+.left-rail, .right-rail {
+  position: sticky; top: calc(var(--header-h) + 16px);
+  max-height: calc(100vh - var(--header-h) - 32px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.left-rail::-webkit-scrollbar, .right-rail::-webkit-scrollbar { width: 8px; }
+.left-rail::-webkit-scrollbar-thumb, .right-rail::-webkit-scrollbar-thumb {
+  background: transparent; border-radius: 4px;
+}
+.left-rail:hover::-webkit-scrollbar-thumb, .right-rail:hover::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+.feed { max-width: 590px; margin: 0 auto; width: 100%; }
+
+/* ===== Rail items ===== */
+.rail-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px; border-radius: var(--radius);
+  cursor: pointer; color: var(--text);
+  transition: background 0.1s;
+  position: relative;
+}
+.rail-item:hover { background: var(--hover); }
+.rail-item .ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center; flex-shrink: 0;
+  background: var(--card-2);
+}
+.rail-item .ico svg { width: 22px; height: 22px; color: var(--brand); }
+.rail-item .label { font-weight: 500; font-size: 15px; }
+.rail-item .sub { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+.rail-divider {
+  border: 0; border-top: 1px solid var(--border-soft);
+  margin: 12px 4px;
+}
+.rail-title {
+  font-size: 17px; font-weight: 600; color: var(--text-2);
+  padding: 8px;
+}
+.rail-title.row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rail-title.row .actions { display: flex; gap: 4px; }
+.rail-title.row .icon-btn { width: 32px; height: 32px; background: transparent; }
+.rail-title.row .icon-btn:hover { background: var(--hover); }
+.rail-footer {
+  font-size: 12px; color: var(--text-3);
+  padding: 8px 12px; line-height: 1.6;
+}
+.rail-footer a { color: var(--text-3); }
+
+/* ===== Avatars ===== */
+.avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--card-2);
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+  display: grid; place-items: center;
+  font-weight: 600; color: var(--text-2); font-size: 16px;
+}
+.avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.avatar.lg { width: 60px; height: 60px; font-size: 22px; }
+.avatar.sm { width: 32px; height: 32px; font-size: 13px; }
+.avatar.xs { width: 28px; height: 28px; font-size: 11px; }
+.avatar.online::after {
+  content: ""; position: absolute;
+  bottom: 0; right: 0;
+  width: 12px; height: 12px;
+  background: var(--green);
+  border-radius: 50%;
+  border: 2px solid var(--card);
+}
+.avatar.lg.online::after { width: 16px; height: 16px; }
+
+/* ===== Card ===== */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+/* ===== Stories ===== */
+.stories {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.story-tile {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--card-2);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s;
+}
+.story-tile:hover { transform: scale(1.015); }
+.story-tile .bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: brightness(0.85);
+}
+.story-tile .grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.65) 100%);
+}
+.story-tile .author {
+  position: absolute; top: 12px; left: 12px;
+  width: 40px; height: 40px;
+  border-radius: 50%; border: 4px solid var(--brand);
+  background-size: cover; background-position: center;
+  background-color: var(--card-2);
+}
+.story-tile .name {
+  position: absolute; bottom: 10px; left: 10px; right: 10px;
+  color: #fff; font-weight: 600; font-size: 13px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+.story-tile.create {
+  display: flex; flex-direction: column;
+}
+.story-tile.create .photo {
+  flex: 1;
+  background-size: cover; background-position: center;
+}
+.story-tile.create .footer {
+  height: 70px;
+  background: var(--card);
+  text-align: center;
+  position: relative;
+  padding: 22px 8px 8px;
+  font-weight: 600; font-size: 13px;
+}
+.story-tile.create .plus {
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 36px;
+  border-radius: 50%; background: var(--brand);
+  border: 4px solid var(--card);
+  display: grid; place-items: center;
+  color: #fff;
+}
+.story-tile.create .plus svg { width: 16px; height: 16px; }
+
+/* ===== Composer ===== */
+.composer { padding: 12px 16px; }
+.composer .row {
+  display: flex; align-items: center; gap: 8px;
+}
+.composer .input {
+  flex: 1;
+  background: var(--hover-strong);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.1s;
+}
+body[data-theme="dark"] .composer .input { background: #3a3b3c; }
+.composer .input:hover { background: #d8dadf; }
+body[data-theme="dark"] .composer .input:hover { background: #4e4f50; }
+.composer .actions {
+  display: flex; gap: 4px; margin-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 10px;
+}
+.composer .actions .a {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 8px;
+  border-radius: var(--radius);
+  cursor: pointer; font-weight: 600; color: var(--text-2);
+  transition: background 0.1s;
+}
+.composer .actions .a:hover { background: var(--hover); }
+.composer .actions .a svg { width: 22px; height: 22px; }
+.a.live svg { color: #f3425f; }
+.a.photo svg { color: #45bd62; }
+.a.feel svg  { color: #f7b928; }
+
+/* ===== Post card ===== */
+.post .head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px 4px;
+}
+.post .head .meta { flex: 1; min-width: 0; }
+.post .head .name {
+  font-weight: 600; font-size: 15px; color: var(--text);
+  display: inline; cursor: pointer;
+}
+.post .head .name:hover { text-decoration: underline; }
+.post .head .name .with { color: var(--text); font-weight: 400; }
+.post .head .name .with b { font-weight: 600; cursor: pointer; }
+.post .head .sub {
+  font-size: 13px; color: var(--text-2); margin-top: 1px;
+  display: flex; align-items: center; gap: 4px;
+}
+.post .head .sub svg { width: 12px; height: 12px; }
+.post .head .actions { display: flex; gap: 4px; }
+.post .head .actions .icon-btn {
+  width: 36px; height: 36px; background: transparent;
+}
+.post .head .actions .icon-btn:hover { background: var(--hover); }
+
+.post .text {
+  padding: 4px 16px 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 15px;
+}
+.post .text.big {
+  font-size: 24px; font-weight: 500; padding: 8px 16px 16px;
+  line-height: 1.3;
+}
+
+.post .images {
+  display: grid; gap: 2px;
+  background: var(--card-2);
+}
+.post .images img {
+  width: 100%; height: 100%; object-fit: cover; cursor: pointer;
+  background: var(--card-2);
+}
+.post .images.n1 { grid-template-columns: 1fr; max-height: 600px; }
+.post .images.n1 img { max-height: 600px; }
+.post .images.n2 { grid-template-columns: 1fr 1fr; aspect-ratio: 16/9; }
+.post .images.n3 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; aspect-ratio: 1/1; }
+.post .images.n3 img:first-child { grid-row: 1 / 3; }
+.post .images.n4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; aspect-ratio: 1/1; }
+.post .images .more {
+  position: relative;
+}
+.post .images .more::after {
+  content: attr(data-more);
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  display: grid; place-items: center;
+  font-size: 36px; font-weight: 700;
+  pointer-events: none;
+}
+
+.post .link-card {
+  margin: 0 16px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+}
+.post .link-card .link-thumb {
+  height: 240px; background-size: cover; background-position: center;
+}
+.post .link-card .link-body {
+  padding: 10px 12px; background: var(--card-2);
+}
+.post .link-card .link-domain {
+  font-size: 12px; color: var(--text-2); text-transform: uppercase;
+}
+.post .link-card .link-title {
+  font-weight: 600; font-size: 17px; color: var(--text);
+  margin: 2px 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.post .link-card .link-desc {
+  font-size: 13px; color: var(--text-2);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post .summary {
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; color: var(--text-2);
+}
+.post .summary .reactions-row {
+  display: flex; align-items: center; gap: 6px; cursor: pointer;
+}
+.post .summary .reactions-row:hover .label { text-decoration: underline; }
+.post .summary .reaction-bubble {
+  display: inline-flex; align-items: center;
+}
+.post .summary .reaction-bubble .e {
+  display: inline-grid; place-items: center;
+  width: 18px; height: 18px;
+  border-radius: 50%; border: 2px solid var(--card);
+  font-size: 14px;
+  margin-left: -4px;
+}
+.post .summary .reaction-bubble .e:first-child { margin-left: 0; }
+.post .summary .meta-right { display: flex; gap: 8px; cursor: pointer; }
+.post .summary .meta-right span:hover { text-decoration: underline; }
+
+.post .actions-row {
+  display: flex;
+  border-top: 1px solid var(--border-soft);
+  padding: 4px 8px;
+  position: relative;
+}
+.post .actions-row .a {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius);
+  cursor: pointer; color: var(--text-2);
+  font-weight: 600; font-size: 15px;
+  transition: background 0.1s;
+  user-select: none;
+  position: relative;
+}
+.post .actions-row .a:hover { background: var(--hover); }
+.post .actions-row .a svg { width: 20px; height: 20px; }
+.post .actions-row .a.reacted-like { color: var(--like); }
+.post .actions-row .a.reacted-love { color: var(--love); }
+.post .actions-row .a.reacted-haha,
+.post .actions-row .a.reacted-wow,
+.post .actions-row .a.reacted-sad { color: #f7b928; }
+.post .actions-row .a.reacted-angry { color: #e9710f; }
+
+.reaction-picker {
+  position: absolute;
+  bottom: calc(100% + 8px); left: 0;
+  background: var(--card);
+  border-radius: 999px;
+  padding: 6px;
+  display: flex; gap: 2px;
+  box-shadow: var(--shadow-md);
+  opacity: 0; transform: translateY(8px) scale(0.9);
+  transform-origin: bottom left;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 5;
+}
+.reaction-picker.show {
+  opacity: 1; transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.reaction-picker .e {
+  font-size: 28px;
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.reaction-picker .e:hover { transform: scale(1.3) translateY(-4px); }
+
+/* ===== Comments ===== */
+.comments {
+  padding: 6px 16px 12px;
+  border-top: 1px solid var(--border-soft);
+  display: none;
+}
+.comments.open { display: block; }
+.comment {
+  display: flex; gap: 8px; margin-top: 10px;
+}
+.comment .body {
+  background: var(--card-2);
+  padding: 8px 12px;
+  border-radius: 18px;
+  max-width: 100%;
+}
+.comment .body .name {
+  font-weight: 600; font-size: 13px; cursor: pointer;
+}
+.comment .body .name:hover { text-decoration: underline; }
+.comment .body .text {
+  font-size: 14px; word-break: break-word;
+  white-space: pre-wrap;
+}
+.comment .actions {
+  font-size: 12px; color: var(--text-2);
+  margin: 4px 12px 0; display: flex; gap: 12px;
+}
+.comment .actions span { cursor: pointer; font-weight: 600; }
+.comment .actions span:hover { text-decoration: underline; }
+
+.comment-input-wrap {
+  display: flex; gap: 8px; margin-top: 10px; align-items: center;
+}
+.comment-input-wrap .input {
+  flex: 1; display: flex; align-items: center;
+  background: var(--card-2); border-radius: 18px;
+  padding: 8px 12px;
+}
+.comment-input-wrap input {
+  flex: 1; background: transparent; border: 0; outline: none;
+  color: var(--text); font-size: 14px;
+}
+.comment-input-wrap .icon-btn {
+  width: 28px; height: 28px; background: transparent;
+}
+.comment-input-wrap .icon-btn:hover { background: var(--hover); }
+.comment-input-wrap .icon-btn svg { width: 16px; height: 16px; color: var(--text-2); }
+
+/* ===== Sponsored ===== */
+.sponsored .post-thumb {
+  display: flex; gap: 12px;
+  padding: 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  align-items: center;
+}
+.sponsored .post-thumb:hover { background: var(--hover); }
+.sponsored .post-thumb .img {
+  width: 130px; height: 130px;
+  border-radius: var(--radius);
+  background-size: cover; background-position: center;
+  flex-shrink: 0;
+}
+.sponsored .post-thumb .text .title {
+  font-size: 15px; font-weight: 500;
+}
+.sponsored .post-thumb .text .domain {
+  font-size: 12px; color: var(--text-2); margin-top: 4px;
+}
+
+/* ===== Birthdays ===== */
+.birthday-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+}
+.birthday-row .ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(244,67,113,0.15); color: var(--red);
+  display: grid; place-items: center;
+}
+.birthday-row .ico svg { width: 22px; height: 22px; }
+.birthday-row .text { font-size: 14px; }
+.birthday-row .text b { font-weight: 600; }
+
+/* ===== Right rail contacts ===== */
+.contact-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.contact-row:hover { background: var(--hover); }
+.contact-row .name { font-weight: 500; font-size: 15px; }
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 8px 16px;
+  background: var(--brand); color: #fff;
+  border: 0; border-radius: var(--radius);
+  font-weight: 600; cursor: pointer;
+  font-size: 15px;
+}
+.btn:hover { background: var(--brand-hover); }
+.btn-ghost {
+  background: var(--card-2); color: var(--text);
+}
+.btn-ghost:hover { background: var(--hover-strong); }
+
+/* ===== Friend request inline card ===== */
+.fr-card {
+  padding: 12px;
+}
+.fr-card .head {
+  display: flex; gap: 12px; align-items: center;
+}
+.fr-card .head .meta { flex: 1; }
+.fr-card .head .name { font-weight: 600; font-size: 15px; }
+.fr-card .head .sub { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+.fr-card .actions {
+  display: flex; gap: 8px; margin-top: 10px;
+}
+.fr-card .actions .btn,
+.fr-card .actions .btn-ghost {
+  flex: 1; padding: 6px;
+}
+
+/* ===== Dropdowns ===== */
+.dropdown {
+  position: absolute; top: calc(var(--header-h) - 4px); right: 12px;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 360px;
+  max-height: calc(100vh - var(--header-h) - 24px);
+  overflow-y: auto;
+  z-index: 200;
+  display: none;
+}
+.dropdown.show { display: block; }
+.dropdown.wide { width: 380px; }
+.dropdown .head {
+  padding: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dropdown .head h2 {
+  margin: 0; font-size: 24px; font-weight: 700;
+}
+.dropdown .head .actions {
+  display: flex; gap: 4px;
+}
+.dropdown .tabs {
+  display: flex; gap: 4px; padding: 0 12px 8px;
+}
+.dropdown .tabs .pill {
+  padding: 6px 12px; border-radius: 999px;
+  font-weight: 600; font-size: 14px;
+  cursor: pointer; color: var(--brand);
+  background: rgba(24,119,242,0.1);
+}
+.dropdown .tabs .pill.active {
+  background: var(--brand); color: #fff;
+}
+.dropdown .item {
+  display: flex; gap: 10px; align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.dropdown .item:hover { background: var(--hover); }
+.dropdown .item .body { flex: 1; min-width: 0; }
+.dropdown .item .body .text { font-size: 14px; line-height: 1.3; }
+.dropdown .item .body .text b { font-weight: 600; }
+.dropdown .item .body .time {
+  font-size: 12px; color: var(--brand); margin-top: 2px; font-weight: 600;
+}
+.dropdown .item.unread .body .time { color: var(--brand); }
+.dropdown .item.unread::after {
+  content: ""; width: 12px; height: 12px;
+  background: var(--brand); border-radius: 50%;
+  flex-shrink: 0; margin-left: auto;
+}
+.dropdown .footer-link {
+  display: block; text-align: center;
+  padding: 10px;
+  color: var(--brand); font-weight: 600;
+  cursor: pointer;
+}
+.dropdown .footer-link:hover { background: var(--hover); }
+
+.dropdown.profile { width: 360px; }
+.dropdown.profile .me {
+  display: flex; gap: 10px; align-items: center;
+  padding: 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid var(--border-soft);
+  margin: 12px;
+}
+.dropdown.profile .me:hover { background: var(--hover); }
+.dropdown.profile .me .name { font-weight: 600; }
+.dropdown.profile .menu-item {
+  display: flex; gap: 12px; align-items: center;
+  padding: 8px 12px; margin: 4px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.dropdown.profile .menu-item:hover { background: var(--hover); }
+.dropdown.profile .menu-item .ico {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--hover-strong);
+  display: grid; place-items: center;
+}
+body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #4e4f50; }
+.dropdown.profile .menu-item .ico svg { width: 20px; height: 20px; }
+.dropdown.profile .menu-item .label { font-weight: 600; flex: 1; }
+.dropdown.profile .menu-item .sub { font-size: 13px; color: var(--text-2); }
+.dropdown.profile hr {
+  border: 0; border-top: 1px solid var(--border-soft);
+  margin: 8px 12px;
+}
+
+.search-dropdown {
+  position: absolute; top: calc(var(--header-h) - 4px); left: 56px;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 360px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 200;
+  display: none;
+  padding: 8px 0;
+}
+.search-dropdown.show { display: block; }
+.search-dropdown .group-title {
+  font-size: 13px; color: var(--text-2);
+  padding: 6px 16px 4px;
+  font-weight: 600;
+}
+.search-dropdown .item {
+  display: flex; gap: 10px; align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.search-dropdown .item:hover { background: var(--hover); }
+.search-dropdown .item .label { font-weight: 500; }
+.search-dropdown .item .sub { font-size: 12px; color: var(--text-2); }
+.search-dropdown .empty { padding: 16px; text-align: center; color: var(--text-2); }
+
+/* ===== Modals ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  width: 500px; max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.modal .head {
+  padding: 16px; text-align: center; position: relative;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 20px; font-weight: 700;
+}
+.modal .head .close {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--card-2);
+  border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  color: var(--text);
+}
+.modal .head .close:hover { background: var(--hover-strong); }
+.modal .body { padding: 16px; overflow-y: auto; flex: 1; }
+.modal .body .who {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 12px;
+}
+.modal .body .who .name { font-weight: 600; }
+.modal .body .who .audience {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 2px; font-size: 12px; font-weight: 600;
+  background: var(--hover-strong); padding: 2px 8px;
+  border-radius: 999px;
+}
+.modal .body textarea {
+  width: 100%; min-height: 120px;
+  border: 0; outline: none; resize: none;
+  background: transparent; color: var(--text);
+  font-size: 22px; font-family: inherit;
+}
+.modal .body .preview {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 8px;
+  margin-top: 8px;
+  position: relative;
+  text-align: center;
+}
+.modal .body .preview img {
+  max-height: 240px; margin: 0 auto;
+  border-radius: var(--radius);
+}
+.modal .body .preview .remove {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  border-radius: 50%; background: rgba(0,0,0,0.6);
+  color: #fff; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+}
+.modal .footer { padding: 12px 16px; }
+.modal .footer .btn-block {
+  width: 100%; padding: 10px;
+}
+.modal .add-row {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex; align-items: center;
+  margin-bottom: 12px;
+}
+.modal .add-row .label { flex: 1; font-weight: 600; }
+.modal .add-row .icons { display: flex; gap: 4px; }
+.modal .add-row .icons .a {
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  cursor: pointer; border-radius: 50%;
+}
+.modal .add-row .icons .a:hover { background: var(--hover); }
+.modal .add-row .icons .a svg { width: 22px; height: 22px; }
+
+/* ===== Story viewer ===== */
+.story-viewer {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  align-items: center; justify-content: center;
+}
+.story-viewer.show { display: flex; }
+.story-viewer .frame {
+  position: relative;
+  width: 360px; height: 640px; max-width: 95vw; max-height: 95vh;
+  background: #000;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.story-viewer .img {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+}
+.story-viewer .progress {
+  position: absolute; top: 12px; left: 12px; right: 12px;
+  display: flex; gap: 4px; z-index: 3;
+}
+.story-viewer .progress .seg {
+  flex: 1; height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.story-viewer .progress .seg .fill {
+  height: 100%; width: 0;
+  background: #fff;
+  transition: none;
+}
+.story-viewer .progress .seg.done .fill { width: 100%; }
+.story-viewer .progress .seg.active .fill {
+  width: 100%;
+  transition: width 5s linear;
+}
+.story-viewer .header {
+  position: absolute; top: 24px; left: 12px; right: 12px;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 3; color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+.story-viewer .header .author {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1;
+}
+.story-viewer .header .name { font-weight: 600; font-size: 14px; }
+.story-viewer .header .time { font-size: 12px; opacity: 0.85; }
+.story-viewer .nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px;
+  background: rgba(0,0,0,0.5);
+  color: #fff; border: 0; border-radius: 50%;
+  cursor: pointer; z-index: 4;
+  display: grid; place-items: center;
+}
+.story-viewer .nav-btn:hover { background: rgba(0,0,0,0.75); }
+.story-viewer .nav-btn.prev { left: -52px; }
+.story-viewer .nav-btn.next { right: -52px; }
+.story-viewer .close {
+  position: absolute; top: -42px; right: 0;
+  width: 32px; height: 32px;
+  background: rgba(0,0,0,0.5);
+  color: #fff; border: 0; border-radius: 50%;
+  cursor: pointer; z-index: 4;
+  display: grid; place-items: center;
+}
+.story-viewer .tap-area {
+  position: absolute; top: 0; bottom: 0;
+  width: 50%;
+  z-index: 2;
+  cursor: pointer;
+}
+.story-viewer .tap-area.left  { left: 0; }
+.story-viewer .tap-area.right { right: 0; }
+
+/* ===== Image viewer (lightbox) ===== */
+.lightbox {
+  position: fixed; inset: 0; z-index: 1500;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  align-items: center; justify-content: center;
+}
+.lightbox.show { display: flex; }
+.lightbox img {
+  max-width: 95vw; max-height: 95vh;
+  border-radius: var(--radius);
+}
+.lightbox .close {
+  position: absolute; top: 16px; right: 16px;
+  width: 40px; height: 40px;
+  background: rgba(0,0,0,0.5);
+  color: #fff; border: 0; border-radius: 50%;
+  cursor: pointer;
+  display: grid; place-items: center;
+  z-index: 5;
+}
+
+/* ===== Skeleton ===== */
+.skeleton {
+  background: var(--skeleton);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.post-skel {
+  padding: 16px;
+}
+.post-skel .row { display: flex; gap: 8px; align-items: center; }
+.post-skel .a { width: 40px; height: 40px; border-radius: 50%; }
+.post-skel .l { height: 14px; flex: 1; }
+.post-skel .l.short { max-width: 40%; }
+.post-skel .b { height: 220px; margin-top: 12px; }
+
+/* ===== Animations ===== */
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.pop { animation: pop 0.32s ease-out; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1300px) {
+  main.shell { grid-template-columns: 88px 1fr 360px; }
+  .left-rail .full { display: none; }
+  .left-rail .rail-item { justify-content: center; }
+  .left-rail .rail-item .label,
+  .left-rail .rail-item .sub { display: none; }
+  .left-rail .rail-title,
+  .left-rail .rail-footer,
+  .left-rail .rail-divider { display: none; }
+}
+@media (max-width: 1100px) {
+  main.shell { grid-template-columns: 88px 1fr; }
+  .right-rail { display: none; }
+}
+@media (max-width: 900px) {
+  main.shell { grid-template-columns: 1fr; padding: 8px; }
+  .left-rail { display: none; }
+  header.topbar { grid-template-columns: auto 1fr auto; }
+  .bar-mid .tab { width: auto; padding: 0 12px; }
+  .search-wrap { width: 40px; padding: 8px; }
+  .search-wrap input { display: none; }
+}
+@media (max-width: 700px) {
+  .stories { grid-template-columns: repeat(3, 1fr); }
+  .bar-mid .tab .label-text { display: none; }
+}
+
+/* hide scrollbar visual noise on Firefox */
+.left-rail, .right-rail { scrollbar-width: thin; }
+</style>
+</head>
+<body data-theme="light">
+
+<!-- ============== HEADER ============== -->
+<header class="topbar">
+  <div class="bar-left">
+    <div class="logo" title="Facebook" id="logo">
+      <svg viewBox="0 0 36 36"><path d="M21 19h2.7l.4-3.4H21v-2.2c0-1 .3-1.7 1.7-1.7H24V8.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2h-2.6V19h2.6v9H21v-9z"/></svg>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" placeholder="Search Facebook" autocomplete="off" />
+    </div>
+    <div class="search-dropdown" id="searchDropdown"></div>
+  </div>
+
+  <div class="bar-mid">
+    <div class="tab active" data-tab="home" title="Home">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 8h-3v9h-5v-6h-2v6H6v-9H3l9-8z"/></svg>
+    </div>
+    <div class="tab" data-tab="friends" title="Friends">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zm0 2c-3.3 0-7 1.7-7 5v2h14v-2c0-3.3-3.7-5-7-5zm10-2a3 3 0 100-6 3 3 0 000 6zm.5 2c-.3 0-.7 0-1 .1.8 1 1.3 2.2 1.3 3.4v2H22v-2c0-2.2-2.5-3.5-2.5-3.5z"/></svg>
+      <span class="badge">3</span>
+    </div>
+    <div class="tab" data-tab="watch" title="Watch">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-11 12V8l6 4-6 4z"/></svg>
+      <span class="badge">9+</span>
+    </div>
+    <div class="tab" data-tab="market" title="Marketplace">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 9V7a3 3 0 00-3-3H6a3 3 0 00-3 3v2H1v2h1v8a2 2 0 002 2h16a2 2 0 002-2v-8h1V9h-2zM6 6h12a1 1 0 011 1v2H5V7a1 1 0 011-1zm6 12c-2.2 0-4-1.8-4-4h2c0 1.1.9 2 2 2s2-.9 2-2h2c0 2.2-1.8 4-4 4z"/></svg>
+    </div>
+    <div class="tab" data-tab="groups" title="Groups">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73L18 18H6l-.01-1.61c0-1.18.68-2.26 1.76-2.74 1.17-.52 2.61-.9 4.25-.9zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 000 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85a6.95 6.95 0 00-2.78-.58c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
+    </div>
+    <div class="tab" data-tab="gaming" title="Gaming">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM11 13H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+    </div>
+  </div>
+
+  <div class="bar-right">
+    <button class="icon-btn" title="Menu" id="btnMenu">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="1.7"/><circle cx="12" cy="6" r="1.7"/><circle cx="18" cy="6" r="1.7"/><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/><circle cx="6" cy="18" r="1.7"/><circle cx="12" cy="18" r="1.7"/><circle cx="18" cy="18" r="1.7"/></svg>
+    </button>
+    <button class="icon-btn" title="Messenger" id="btnMessenger">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.14 2 11.25c0 2.88 1.43 5.46 3.68 7.16V22l3.36-1.84c.9.25 1.86.39 2.96.39 5.52 0 10-4.14 10-9.25S17.52 2 12 2zm1 12.5l-2.55-2.72L5.5 14.5l5.5-5.83 2.6 2.72L18.5 9l-5.5 5.5z"/></svg>
+      <span class="badge">5</span>
+    </button>
+    <button class="icon-btn" title="Notifications" id="btnNotif">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm6.4-7.4V11c0-3.4-2.1-6.2-5.4-6.85V3.5a1 1 0 10-2 0v.65C7.7 4.8 5.6 7.6 5.6 11v3.6L4 16.4V18h16v-1.6l-1.6-1.8z"/></svg>
+      <span class="badge" id="notifBadge">8</span>
+    </button>
+    <button class="icon-btn" id="btnProfile" title="Account">
+      <span class="avatar sm" id="profAvatar"></span>
+    </button>
+  </div>
+
+  <!-- Dropdowns rendered here so positioning works -->
+  <div class="dropdown" id="ddNotif">
+    <div class="head">
+      <h2>Notifications</h2>
+      <div class="actions">
+        <button class="icon-btn" style="background: transparent;" title="More">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="tabs">
+      <span class="pill active">All</span>
+      <span class="pill">Unread</span>
+    </div>
+    <div id="notifList"></div>
+    <span class="footer-link">See all notifications</span>
+  </div>
+
+  <div class="dropdown wide" id="ddMessenger">
+    <div class="head">
+      <h2>Chats</h2>
+      <div class="actions">
+        <button class="icon-btn" style="background: transparent;" title="New message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="tabs">
+      <span class="pill active">Inbox</span>
+      <span class="pill">Communities</span>
+    </div>
+    <div id="msgList"></div>
+    <span class="footer-link">See all in Messenger</span>
+  </div>
+
+  <div class="dropdown profile" id="ddProfile">
+    <div class="me" id="goProfile">
+      <span class="avatar lg" id="meAvatar"></span>
+      <div>
+        <div class="name" id="meName">Aok Indel</div>
+        <div style="color: var(--text-2); font-size: 13px; margin-top: 2px;">See your profile</div>
+      </div>
+    </div>
+    <hr>
+    <div class="menu-item" id="toggleTheme">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></span>
+      <div style="flex:1">
+        <div class="label">Display & accessibility</div>
+        <div class="sub" id="themeLabel">Light mode</div>
+      </div>
+      <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M9 6l6 6-6 6"/></svg>
+    </div>
+    <div class="menu-item">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 15a1.6 1.6 0 00.32 1.76l.06.06a2 2 0 01-2.82 2.83l-.06-.07a1.6 1.6 0 00-1.76-.32 1.6 1.6 0 00-1 1.46V21a2 2 0 01-4 0v-.09A1.6 1.6 0 008.91 19a1.6 1.6 0 00-1.76.32l-.06.06a2 2 0 11-2.82-2.82l.06-.06A1.6 1.6 0 005 14.74a1.6 1.6 0 00-1.46-1H3.5a2 2 0 010-4h.09A1.6 1.6 0 005 8.91a1.6 1.6 0 00-.32-1.76l-.06-.06a2 2 0 112.82-2.82l.06.06a1.6 1.6 0 001.76.32H9a1.6 1.6 0 001-1.46V3a2 2 0 014 0v.09c0 .65.39 1.23 1 1.46.6.25 1.3.13 1.76-.32l.06-.06a2 2 0 112.82 2.82l-.06.06a1.6 1.6 0 00-.32 1.76V9a1.6 1.6 0 001.46 1H21a2 2 0 010 4h-.09a1.6 1.6 0 00-1.46 1z"/></svg></span>
+      <div class="label">Settings & privacy</div>
+    </div>
+    <div class="menu-item">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.7 15.3h-1.4v-1.4h1.4v1.4zm1.7-6.5l-.6.7c-.5.5-.8 1-.8 2v.5h-1.4v-.5c0-.7.3-1.4.8-1.9l.9-.9c.3-.3.4-.6.4-1 0-.7-.6-1.3-1.3-1.3-.7 0-1.3.6-1.3 1.3H9.7c0-1.5 1.2-2.7 2.7-2.7 1.5 0 2.7 1.2 2.7 2.7 0 .6-.2 1.1-.6 1.5z"/></svg></span>
+      <div class="label">Help & support</div>
+    </div>
+    <div class="menu-item">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8a4 4 0 100 8 4 4 0 000-8zm0 6.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5zm9-2.5c0-.6 0-1.2-.1-1.8l2-1.6-2-3.5-2.4 1c-1-.7-2-1.3-3.2-1.6L15 2H9l-.4 2.5c-1.1.4-2.2.9-3.2 1.6L3 5.1l-2 3.5 2 1.6c-.1.6-.1 1.2-.1 1.8s0 1.2.1 1.8l-2 1.6 2 3.5 2.4-1c1 .7 2 1.3 3.2 1.6L9 22h6l.4-2.5c1.1-.4 2.2-.9 3.2-1.6l2.4 1 2-3.5-2-1.6c.1-.6.1-1.2.1-1.8z"/></svg></span>
+      <div class="label">Display preferences</div>
+    </div>
+    <hr>
+    <div class="menu-item">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 17l5-5-5-5v3H9v4h7v3zm3-14H5a2 2 0 00-2 2v4h2V5h14v14H5v-4H3v4a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z"/></svg></span>
+      <div class="label">Log out</div>
+    </div>
+    <div style="font-size: 12px; color: var(--text-3); padding: 8px 16px;">
+      Privacy · Terms · Advertising · Ad Choices · Cookies · More · Meta © 2025
+    </div>
+  </div>
+</header>
+
+<!-- ============== MAIN ============== -->
+<main class="shell">
+
+  <!-- LEFT RAIL -->
+  <aside class="left-rail" id="leftRail"></aside>
+
+  <!-- FEED -->
+  <section class="feed">
+    <!-- Stories -->
+    <div class="stories" id="stories"></div>
+
+    <!-- Composer -->
+    <div class="card composer" id="composer">
+      <div class="row">
+        <span class="avatar" id="composerAvatar"></span>
+        <div class="input" id="composerOpen">What's on your mind, <span id="composerName">Aok</span>?</div>
+      </div>
+      <div class="actions">
+        <div class="a live">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>Live video</span>
+        </div>
+        <div class="a photo" id="openPhoto">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2zm-1 14H4l4-5 3 3 4-5 5 7z"/></svg>
+          <span>Photo/video</span>
+        </div>
+        <div class="a feel">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-3.5 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm7 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM12 18c-2.5 0-4.6-1.6-5.5-4h11c-.9 2.4-3 4-5.5 4z"/></svg>
+          <span>Feeling/activity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed posts get inserted here -->
+    <div id="feedList"></div>
+
+    <!-- Sentinel for infinite scroll -->
+    <div id="sentinel" style="height: 40px;"></div>
+  </section>
+
+  <!-- RIGHT RAIL -->
+  <aside class="right-rail" id="rightRail"></aside>
+
+</main>
+
+<!-- ============== MODALS ============== -->
+<div class="modal-overlay" id="composerModal">
+  <div class="modal">
+    <div class="head">
+      Create post
+      <button class="close" data-close>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+    <div class="body">
+      <div class="who">
+        <span class="avatar" id="modalAvatar"></span>
+        <div>
+          <div class="name" id="modalName">Aok Indel</div>
+          <span class="audience">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 17.9c-3.9-.5-7-3.8-7-7.9 0-.6.1-1.2.2-1.8L9 15v1c0 1.1.9 2 2 2v1.9zm6.9-2.5c-.3-.8-1-1.4-1.9-1.4h-1v-3a1 1 0 00-1-1H8v-2h2a1 1 0 001-1V7h2a2 2 0 002-2v-.4c2.9 1.2 5 4.1 5 7.4 0 2.1-.8 4-2.1 5.4z"/></svg>
+            Public
+            <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><path d="M7 10l5 5 5-5z"/></svg>
+          </span>
+        </div>
+      </div>
+      <textarea id="postText" placeholder="What's on your mind, Aok?"></textarea>
+      <div class="preview" id="postPreview" style="display: none;">
+        <button class="remove" id="removePreview" title="Remove">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+        </button>
+        <img id="previewImg" />
+      </div>
+      <div class="add-row">
+        <span class="label">Add to your post</span>
+        <div class="icons">
+          <label class="a" title="Photo/video">
+            <svg viewBox="0 0 24 24" fill="#45bd62"><path d="M21 5H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2zm-1 14H4l4-5 3 3 4-5 5 7z"/></svg>
+            <input type="file" accept="image/*" id="postImage" hidden />
+          </label>
+          <span class="a" title="Tag friends">
+            <svg viewBox="0 0 24 24" fill="#1877f2"><path d="M9 11a4 4 0 100-8 4 4 0 000 8zm0 2c-3.3 0-7 1.7-7 5v2h14v-2c0-3.3-3.7-5-7-5z"/></svg>
+          </span>
+          <span class="a" title="Feeling">
+            <svg viewBox="0 0 24 24" fill="#f7b928"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8.5 9a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm7 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM12 18c-2.5 0-4.6-1.6-5.5-4h11c-.9 2.4-3 4-5.5 4z"/></svg>
+          </span>
+          <span class="a" title="Check in">
+            <svg viewBox="0 0 24 24" fill="#f3425f"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>
+          </span>
+          <span class="a" title="GIF">
+            <svg viewBox="0 0 24 24" fill="#5e69ff"><path d="M21 4H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V6a2 2 0 00-2-2zm-9 11h-2V9h2v6zm5-2h-2v2h-2V9h4v1.5h-2v.8h2V13z"/></svg>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <button class="btn btn-block" id="postSubmit">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- Story viewer -->
+<div class="story-viewer" id="storyViewer">
+  <button class="close" id="storyClose" style="position: absolute; top: 16px; right: 16px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <button class="nav-btn prev" id="storyPrev">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="frame">
+    <div class="img" id="storyImg"></div>
+    <div class="progress" id="storyProgress"></div>
+    <div class="header">
+      <span class="avatar sm" id="storyAvatar"></span>
+      <div class="author">
+        <div>
+          <div class="name" id="storyName">Author</div>
+          <div class="time" id="storyTime">2h ago</div>
+        </div>
+      </div>
+    </div>
+    <div class="tap-area left" id="tapPrev"></div>
+    <div class="tap-area right" id="tapNext"></div>
+  </div>
+  <button class="nav-btn next" id="storyNext">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="close" id="lightboxClose">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
+  <img id="lightboxImg" />
+</div>
+
+<script>
+/* ================================================================
+   AOK REGISTRY — application script
+   ================================================================ */
+
+// ==================== ICON LIBRARY ====================
+const I = {
+  globe:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 17.9A8 8 0 014.1 13H7v1a3 3 0 003 3v3l1-.1zM18.9 16A8 8 0 0113 19.9V18a2 2 0 002-2v-1h2a2 2 0 002-2h.9a8 8 0 01-1 3z"/></svg>',
+  more:   '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/></svg>',
+  close:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>',
+  like:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 20h2v-9H2v9zM21 9h-6V4l-2-1-4 6v11h11l3-7v-3a1 1 0 00-1-1z"/></svg>',
+  likeF:  '<svg viewBox="0 0 24 24"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56a4ff"/><stop offset="1" stop-color="#1877f2"/></linearGradient></defs><circle cx="12" cy="12" r="11" fill="url(#lg)"/><path fill="#fff" d="M16 9.5h-2.5V7l-1-.5-2 3V17h6l1.5-3.5V11a.5.5 0 00-.5-.5z"/><path fill="#fff" d="M7 11h2v6H7z"/></svg>',
+  comment:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z"/></svg>',
+  share:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>',
+  cake:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 6a2 2 0 002-2c0-1.5-2-3-2-3s-2 1.5-2 3a2 2 0 002 2zm5 12v-4a2 2 0 00-2-2v-1a3 3 0 10-6 0v1a2 2 0 00-2 2v4H5v3h14v-3h-2zm-9-4h8v3H8v-3z"/></svg>',
+  bookmark:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-3-7 3V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg>',
+  clock:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm.5-13H11v6l5.2 3.2.8-1.3L12.5 12V7z"/></svg>',
+  group:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12.75c1.63 0 3.07.39 4.24.9 1.08.48 1.76 1.56 1.76 2.73L18 18H6l-.01-1.61c0-1.18.68-2.26 1.76-2.74 1.17-.52 2.61-.9 4.25-.9zM4 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm1.13 1.1c-.37-.06-.74-.1-1.13-.1-.99 0-1.93.21-2.78.58A2.01 2.01 0 000 16.43V18h4.5v-1.61c0-.83.23-1.61.63-2.29zM20 13c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85a6.95 6.95 0 00-2.78-.58c-.39 0-.76.04-1.13.1.4.68.63 1.46.63 2.29V18H24v-1.57zM12 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>',
+  market: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 9V7a3 3 0 00-3-3H6a3 3 0 00-3 3v2H1v2h1v8a2 2 0 002 2h16a2 2 0 002-2v-8h1V9h-2zM6 6h12a1 1 0 011 1v2H5V7a1 1 0 011-1z"/></svg>',
+  watch:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-11 12V8l6 4-6 4z"/></svg>',
+  pages:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>',
+  events: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>',
+  saved:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-3-7 3V5a2 2 0 012-2h10a2 2 0 012 2v16z"/></svg>',
+  memories:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v6l4-3-4-3zm0 14a8 8 0 008-8h-2a6 6 0 11-6-6V0a8 8 0 100 16 8 8 0 008-8h-2a6 6 0 01-6 6z"/></svg>',
+  ads:    '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9zm-2 0c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7 7-3.13 7-7zm-7-3l-1 6h2l-1-6z"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>',
+  send:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>',
+  smile:  '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm-3.5 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm7 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM12 18c-2.5 0-4.6-1.6-5.5-4h11c-.9 2.4-3 4-5.5 4z"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 5h-3.2L16 3H8L6.2 5H3a2 2 0 00-2 2v12a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2zm-9 12a5 5 0 110-10 5 5 0 010 10z"/></svg>',
+};
+
+const REACTIONS = [
+  { id: "like",  emoji: "👍", label: "Like" },
+  { id: "love",  emoji: "❤️", label: "Love" },
+  { id: "care",  emoji: "🤗", label: "Care" },
+  { id: "haha",  emoji: "😆", label: "Haha" },
+  { id: "wow",   emoji: "😮", label: "Wow" },
+  { id: "sad",   emoji: "😢", label: "Sad" },
+  { id: "angry", emoji: "😡", label: "Angry" },
+];
+const REACT_BY_ID = Object.fromEntries(REACTIONS.map(r => [r.id, r]));
+
+// ==================== STATIC SEED DATA ====================
+const ME = {
+  id: "u_me",
+  name: "Aok Indel",
+  firstName: "Aok",
+  avatarSeed: "aokindel"
+};
+
+const USERS = [
+  { id: "u1",  name: "Sarah Chen",        seed: "sarah",   online: true  },
+  { id: "u2",  name: "Marcus Williams",   seed: "marcus",  online: true  },
+  { id: "u3",  name: "Priya Patel",       seed: "priya",   online: false },
+  { id: "u4",  name: "David Kim",         seed: "david",   online: true  },
+  { id: "u5",  name: "Emily Rodriguez",   seed: "emily",   online: false },
+  { id: "u6",  name: "James O'Connor",    seed: "james",   online: true  },
+  { id: "u7",  name: "Aisha Mohammed",    seed: "aisha",   online: false },
+  { id: "u8",  name: "Liam Anderson",     seed: "liam",    online: true  },
+  { id: "u9",  name: "Mei Lin",           seed: "meilin",  online: true  },
+  { id: "u10", name: "Carlos Diaz",       seed: "carlos",  online: false },
+  { id: "u11", name: "Olivia Thompson",   seed: "olivia",  online: true  },
+  { id: "u12", name: "Noah Schmidt",      seed: "noah",    online: false },
+  { id: "u13", name: "Zara Bakir",        seed: "zara",    online: true  },
+  { id: "u14", name: "Ethan Brooks",      seed: "ethan",   online: false },
+  { id: "u15", name: "Fatima Hassan",     seed: "fatima",  online: true  },
+  { id: "u16", name: "Theo Nakamura",     seed: "theo",    online: false },
+  { id: "u17", name: "Isabella Rossi",    seed: "isabella",online: true  },
+  { id: "u18", name: "Daniel Park",       seed: "daniel",  online: true  },
+  { id: "u19", name: "Maya Krishnan",     seed: "maya",    online: false },
+  { id: "u20", name: "Hassan Bennani",    seed: "hassan",  online: true  },
+  { id: "u21", name: "Sophia Lambert",    seed: "sophia",  online: false },
+  { id: "u22", name: "Yuki Tanaka",       seed: "yuki",    online: true  },
+  { id: "u23", name: "Lucas Andersson",   seed: "lucas",   online: false },
+  { id: "u24", name: "Amara Okafor",      seed: "amara",   online: true  },
+];
+const USER_BY_ID = Object.fromEntries(USERS.map(u => [u.id, u]));
+
+const STORIES = [
+  { user: "u1",  segments: [ "story-sarah-1",  "story-sarah-2"  ] },
+  { user: "u4",  segments: [ "story-david-1"                    ] },
+  { user: "u6",  segments: [ "story-james-1", "story-james-2", "story-james-3" ] },
+  { user: "u9",  segments: [ "story-mei-1",   "story-mei-2"     ] },
+  { user: "u11", segments: [ "story-olivia-1"                   ] },
+  { user: "u15", segments: [ "story-fatima-1","story-fatima-2"  ] },
+  { user: "u17", segments: [ "story-isa-1"                      ] },
+  { user: "u22", segments: [ "story-yuki-1",  "story-yuki-2"    ] },
+];
+
+function picsum(seed, w, h) {
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}`;
+}
+function avatarUrl(seed) {
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}&radius=50`;
+}
+
+// 18 seed posts with varied content
+const SEED_POSTS = [
+  {
+    id: "p1", authorId: "u1", time: "2h",
+    text: "Just got back from a 3-week solo trip through Patagonia. The W trek in Torres del Paine was every bit as humbling as people say. Already looking at the next one. 🇦🇷",
+    images: [ picsum("patagonia1", 800, 600), picsum("patagonia2", 600, 600), picsum("patagonia3", 600, 600) ],
+    reactions: { like: 142, love: 38, wow: 24 },
+    userReaction: null,
+    comments: [
+      { id: "c1", authorId: "u4", text: "These shots are unreal. What lens were you shooting?", time: "1h", replies: [
+        { id: "c1r1", authorId: "u1", text: "Mostly the 24-70 — wide enough for the towers, fast enough for the lodge nights.", time: "55m" }
+      ]},
+      { id: "c2", authorId: "u11", text: "Adding this to my list immediately!!", time: "47m", replies: [] }
+    ],
+  },
+  {
+    id: "p2", authorId: "u2", time: "4h",
+    text: "Hot take: the best productivity system is the one you'll actually use for more than two weeks.",
+    images: [],
+    reactions: { like: 89, haha: 12, wow: 5 },
+    userReaction: null,
+    comments: [
+      { id: "c3", authorId: "u8", text: "Brutally true. I've had eight \"forever systems\" this year.", time: "3h", replies: [] }
+    ],
+  },
+  {
+    id: "p3", authorId: "u3", time: "6h",
+    text: "Made my grandma's chicken biryani for the first time. Followed her hand-written recipe (with measurements like \"a fistful\" and \"until it smells right\"). Took 4 hours. Worth every minute.",
+    images: [ picsum("biryani", 800, 800) ],
+    reactions: { like: 234, love: 88, care: 14 },
+    userReaction: null,
+    comments: [
+      { id: "c4", authorId: "u15", text: "The handwritten-recipe inheritance is everything 🥹", time: "5h", replies: [] },
+      { id: "c5", authorId: "u19", text: "Recipe drop?? please??", time: "4h", replies: [] },
+      { id: "c6", authorId: "u3", text: "Grandma forbids it leaving the family. Sorry friends 💔", time: "3h", replies: [] }
+    ],
+  },
+  {
+    id: "p4", authorId: "u4", time: "8h",
+    kind: "link",
+    text: "Spent the morning reading this. Fascinating how much of \"taste\" is just deliberate exposure.",
+    link: {
+      domain: "PAULGRAHAM.COM",
+      title: "How to Do Great Work",
+      desc: "If you collected lists of techniques for doing great work in all different fields, what would the intersection look like?",
+      thumb: picsum("essay", 800, 420)
+    },
+    reactions: { like: 56, love: 8 },
+    userReaction: null,
+    comments: [],
+  },
+  {
+    id: "p5", authorId: "u6", time: "12h",
+    text: "Marathon #5 done. 3:42:18. Slower than goal but I ran the whole thing smiling, so I'm calling it a win.",
+    images: [ picsum("marathon1", 800, 600), picsum("marathon2", 600, 600) ],
+    reactions: { like: 312, love: 96, wow: 41, care: 12 },
+    userReaction: "love",
+    comments: [
+      { id: "c7", authorId: "u1", text: "Smile pace is the best pace. Congrats!!", time: "10h", replies: [] },
+      { id: "c8", authorId: "u17", text: "INCREDIBLE 🎉🎉🎉", time: "9h", replies: [] }
+    ],
+  },
+  {
+    id: "p6", authorId: "u8", time: "1d",
+    kind: "big",
+    text: "Sometimes the bravest thing is showing up tired.",
+    images: [],
+    reactions: { like: 187, love: 64, care: 22 },
+    userReaction: null,
+    comments: [
+      { id: "c9", authorId: "u24", text: "🙏", time: "23h", replies: [] }
+    ],
+  },
+  {
+    id: "p7", authorId: "u9", time: "1d",
+    text: "Pottery class week 4. Finally a bowl that doesn't lean like the Tower of Pisa.",
+    images: [ picsum("pottery1", 600, 600), picsum("pottery2", 600, 600), picsum("pottery3", 600, 600), picsum("pottery4", 600, 600) ],
+    reactions: { like: 78, haha: 14 },
+    userReaction: null,
+    comments: [
+      { id: "c10", authorId: "u22", text: "Week 4 me had a bowl that was technically a plate. Crushing it!", time: "20h", replies: [] }
+    ],
+  },
+  {
+    id: "p8", authorId: "u11", time: "1d",
+    text: "Reminder that touching grass is a feature, not a bug.",
+    images: [ picsum("grass", 1000, 700) ],
+    reactions: { like: 412, haha: 88, love: 30 },
+    userReaction: "like",
+    comments: [],
+  },
+  {
+    id: "p9", authorId: "u13", time: "2d",
+    sponsored: true,
+    sponsorName: "Linear",
+    text: "The issue tracker built for high-performance teams. Try it free.",
+    images: [ picsum("linear", 800, 420) ],
+    reactions: { like: 14 },
+    userReaction: null,
+    comments: [],
+    cta: "Learn more"
+  },
+  {
+    id: "p10", authorId: "u15", time: "2d",
+    text: "Rooftop garden update: the tomatoes finally believe in themselves 🍅",
+    images: [ picsum("garden1", 800, 800), picsum("garden2", 600, 600) ],
+    reactions: { like: 156, love: 44, wow: 9 },
+    userReaction: null,
+    comments: [
+      { id: "c11", authorId: "u3", text: "Send tomato.", time: "2d", replies: [] }
+    ],
+  },
+  {
+    id: "p11", authorId: "u17", time: "2d",
+    text: "Currently reading: \"A Gentleman in Moscow\" — three chapters in and already underlining sentences. What's everyone reading right now?",
+    images: [],
+    reactions: { like: 92, love: 18 },
+    userReaction: null,
+    comments: [
+      { id: "c12", authorId: "u4", text: "Just finished \"The Overstory\" — completely changed how I look at trees.", time: "1d", replies: [] },
+      { id: "c13", authorId: "u19", text: "\"Pachinko\". Wrecking me in the best way.", time: "1d", replies: [] }
+    ],
+  },
+  {
+    id: "p12", authorId: "u20", time: "3d",
+    text: "First snow in Marrakech in years. The contrast against the red walls is unreal. Reposting because the algorithm hates me but you should see this.",
+    images: [ picsum("snow1", 1000, 700), picsum("snow2", 800, 600), picsum("snow3", 800, 600) ],
+    reactions: { like: 528, love: 142, wow: 87 },
+    userReaction: null,
+    comments: [
+      { id: "c14", authorId: "u1", text: "Stunning.", time: "3d", replies: [] }
+    ],
+  },
+  {
+    id: "p13", authorId: "u22", time: "3d",
+    text: "Fresh ramen in Sapporo > everything.",
+    images: [ picsum("ramen", 800, 600) ],
+    reactions: { like: 264, love: 78, haha: 6 },
+    userReaction: null,
+    comments: [],
+  },
+  {
+    id: "p14", authorId: "u5", time: "4d",
+    kind: "link",
+    text: "We launched something today. Tiny team, big problem. If you've ever lost an afternoon to JIRA, you'll feel this.",
+    link: {
+      domain: "PRODUCTHUNT.COM",
+      title: "Notion Calendar — your time, all in one place",
+      desc: "A new calendar from Notion that bridges all the tools you already use, designed for focused work.",
+      thumb: picsum("ph", 800, 420)
+    },
+    reactions: { like: 47, love: 9 },
+    userReaction: null,
+    comments: [],
+  },
+  {
+    id: "p15", authorId: "u24", time: "4d",
+    text: "On the way to my sister's wedding in Lagos. The aso-ebi colors this year are 🔥🔥🔥",
+    images: [ picsum("wedding1", 800, 600), picsum("wedding2", 600, 600), picsum("wedding3", 600, 600), picsum("wedding4", 600, 600), picsum("wedding5", 600, 600) ],
+    reactions: { like: 198, love: 73, care: 12 },
+    userReaction: null,
+    comments: [
+      { id: "c15", authorId: "u15", text: "Pictures or it didn't happen!! Have so much fun!", time: "3d", replies: [] }
+    ],
+  },
+  {
+    id: "p16", authorId: "u7", time: "5d",
+    text: "My new puppy meets my old grumpy cat. Day 1 of 7. Wish us luck.",
+    images: [ picsum("petfriends", 1000, 700) ],
+    reactions: { like: 612, love: 188, haha: 94 },
+    userReaction: null,
+    comments: [
+      { id: "c16", authorId: "u11", text: "The cat's face is sending me 😂😂", time: "5d", replies: [] }
+    ],
+  },
+  {
+    id: "p17", authorId: "u14", time: "6d",
+    text: "PSA: if you've been putting off seeing a doctor about that thing, this is your sign. Got mine checked, totally benign, and now I sleep again. Take care of yourselves friends.",
+    images: [],
+    reactions: { like: 234, love: 87, care: 188 },
+    userReaction: null,
+    comments: [
+      { id: "c17", authorId: "u8", text: "Made the appointment. Thanks for posting this.", time: "5d", replies: [] }
+    ],
+  },
+  {
+    id: "p18", authorId: "u18", time: "1w",
+    text: "Watching my kid attempt to fold a fitted sheet is the most humbling thing I've witnessed all month.",
+    images: [],
+    reactions: { like: 142, haha: 78 },
+    userReaction: null,
+    comments: [],
+  },
+];
+
+const SUGGESTED_FRIENDS = [
+  { id: "f1", userId: "u23", mutual: 14 },
+  { id: "f2", userId: "u16", mutual: 8  },
+];
+
+const NOTIFICATIONS = [
+  { id: "n1", userId: "u1",  text: "<b>Sarah Chen</b> reacted ❤️ to your post.",                         time: "2h",  unread: true },
+  { id: "n2", userId: "u6",  text: "<b>James O'Connor</b> commented on a photo you're tagged in.",        time: "4h",  unread: true },
+  { id: "n3", userId: "u11", text: "<b>Olivia Thompson</b> mentioned you in a comment.",                  time: "6h",  unread: true },
+  { id: "n4", userId: "u4",  text: "<b>David Kim</b> sent you a friend request.",                         time: "8h",  unread: true },
+  { id: "n5", userId: "u22", text: "<b>Yuki Tanaka</b> shared a memory with you.",                        time: "1d",  unread: false },
+  { id: "n6", userId: "u15", text: "<b>Fatima Hassan</b> invited you to like the page <b>Type & Tea</b>.", time: "2d",  unread: false },
+  { id: "n7", userId: "u9",  text: "<b>Mei Lin</b> and 4 others reacted to your photo.",                  time: "3d",  unread: false },
+  { id: "n8", userId: "u17", text: "<b>Isabella Rossi</b> tagged you in a post.",                          time: "4d",  unread: false },
+];
+
+const MESSAGES = [
+  { id: "m1", userId: "u1",  text: "haha yes — see you Sunday!",          time: "2m",  unread: true },
+  { id: "m2", userId: "u4",  text: "did you see the trade?? 🤯",            time: "12m", unread: true },
+  { id: "m3", userId: "u11", text: "Voicemail · 0:47",                     time: "44m", unread: true },
+  { id: "m4", userId: "u6",  text: "Sent you the file. let me know.",      time: "2h",  unread: true },
+  { id: "m5", userId: "u17", text: "🍕🍕🍕",                                  time: "3h",  unread: false },
+  { id: "m6", userId: "u22", text: "sapporo > everywhere. fight me.",       time: "1d",  unread: false },
+  { id: "m7", userId: "u3",  text: "send the recipe please. begging.",      time: "2d",  unread: false },
+  { id: "m8", userId: "u15", text: "I'll bring the basil 🌿",                time: "3d",  unread: false },
+];
+
+const BIRTHDAYS = [
+  { userId: "u4",  when: "today" },
+  { userId: "u17", when: "tomorrow" },
+];
+
+const SHORTCUTS = [
+  { name: "Indie Hackers",        seed: "ih"   },
+  { name: "Photographers Toronto", seed: "pt"  },
+  { name: "Trail Running Co-op",  seed: "trc"  },
+  { name: "Kotlin Devs",          seed: "kt"   },
+  { name: "Korean Cooking",       seed: "kc"   },
+];
+
+const SEARCH_INDEX = [
+  ...USERS.map(u => ({ kind: "Person", label: u.name, sub: "Friend",      seed: u.seed })),
+  ...SHORTCUTS.map(g => ({ kind: "Group", label: g.name, sub: "Group",     seed: g.seed })),
+  { kind: "Page", label: "Type & Tea",                  sub: "Local business", seed: "tt" },
+  { kind: "Page", label: "Specialty Coffee Daily",      sub: "Media/News",     seed: "scd"},
+  { kind: "Page", label: "Outdoor Gear Reviews",        sub: "Brand",          seed: "ogr"},
+  { kind: "Place", label: "Torres del Paine",          sub: "National park",  seed: "tdp"},
+  { kind: "Place", label: "Sapporo, Japan",            sub: "City",           seed: "sap"},
+];
+
+// ==================== STATE ====================
+const STORAGE_KEY = "aok-registry-state-v1";
+
+const state = {
+  posts: JSON.parse(JSON.stringify(SEED_POSTS)),
+  theme: "light",
+  feedOffset: 0,
+};
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      posts: state.posts,
+      theme: state.theme,
+    }));
+  } catch (e) {}
+}
+function hydrate() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.posts) state.posts = data.posts;
+    if (data.theme) state.theme = data.theme;
+  } catch (e) {}
+}
+
+// ==================== HELPERS ====================
+function el(html) {
+  const div = document.createElement("div");
+  div.innerHTML = html.trim();
+  return div.firstElementChild;
+}
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+function avatarHTML(user, cls = "") {
+  if (!user) return "";
+  const initials = user.name.split(" ").map(s => s[0]).slice(0,2).join("").toUpperCase();
+  return `<span class="avatar ${cls} ${user.online ? "online" : ""}">
+    <img src="${avatarUrl(user.seed || user.avatarSeed)}" alt="${escapeHtml(user.name)}"
+         onerror="this.style.display='none';this.parentElement.textContent='${initials}';" />
+  </span>`;
+}
+function reactionTotals(post) {
+  let total = 0;
+  Object.values(post.reactions || {}).forEach(v => total += v);
+  if (post.userReaction) total += 1;
+  return total;
+}
+function topReactions(post) {
+  const entries = Object.entries(post.reactions || {})
+    .filter(([k]) => REACT_BY_ID[k])
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,3)
+    .map(([k]) => REACT_BY_ID[k].emoji);
+  if (post.userReaction && !entries.length) entries.push(REACT_BY_ID[post.userReaction].emoji);
+  if (!entries.length) entries.push("👍");
+  return entries;
+}
+
+// ==================== RENDER: HEADER AVATARS ====================
+function renderHeaderAvatars() {
+  const meUser = { ...ME, seed: ME.avatarSeed };
+  document.getElementById("profAvatar").innerHTML = `<img src="${avatarUrl(ME.avatarSeed)}" />`;
+  document.getElementById("composerAvatar").outerHTML = avatarHTML(meUser);
+  document.getElementById("modalAvatar").outerHTML = avatarHTML(meUser);
+  document.getElementById("meAvatar").outerHTML = avatarHTML(meUser, "lg");
+  document.getElementById("composerName").textContent = ME.firstName;
+  document.getElementById("modalName").textContent = ME.name;
+  document.getElementById("meName").textContent = ME.name;
+}
+
+// ==================== RENDER: LEFT RAIL ====================
+function renderLeftRail() {
+  const rail = document.getElementById("leftRail");
+  const meUser = { ...ME, seed: ME.avatarSeed };
+  rail.innerHTML = `
+    <div class="rail-item">
+      ${avatarHTML(meUser)}
+      <div class="label full">${escapeHtml(ME.name)}</div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.group}</span>
+      <div class="full"><div class="label">Friends</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.group}</span>
+      <div class="full"><div class="label">Groups</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.market}</span>
+      <div class="full"><div class="label">Marketplace</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.watch}</span>
+      <div class="full"><div class="label">Watch</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.memories}</span>
+      <div class="full"><div class="label">Memories</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.saved}</span>
+      <div class="full"><div class="label">Saved</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.pages}</span>
+      <div class="full"><div class="label">Pages</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.events}</span>
+      <div class="full"><div class="label">Events</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.ads}</span>
+      <div class="full"><div class="label">Ads Manager</div></div>
+    </div>
+    <div class="rail-item">
+      <span class="ico">${I.chevron}</span>
+      <div class="full"><div class="label">See more</div></div>
+    </div>
+    <hr class="rail-divider" />
+    <div class="rail-title">Your shortcuts</div>
+    ${SHORTCUTS.map(s => `
+      <div class="rail-item">
+        <span class="ico" style="background-image: url('${picsum(s.seed, 80, 80)}'); background-size: cover;"></span>
+        <div class="full"><div class="label">${escapeHtml(s.name)}</div></div>
+      </div>
+    `).join("")}
+    <div class="rail-footer full">
+      <a>Privacy</a> · <a>Terms</a> · <a>Advertising</a> · <a>Ad Choices</a> · <a>Cookies</a> · More · <br>Meta © 2025
+    </div>
+  `;
+}
+
+// ==================== RENDER: RIGHT RAIL ====================
+function renderRightRail() {
+  const rail = document.getElementById("rightRail");
+  const sponsored = [
+    { title: "Built for serious athletes — Trail running shoes 30% off this week.", domain: "trailco.example", seed: "ad1" },
+    { title: "Learn Korean in 15 minutes a day. Free 7-day trial.",                   domain: "korean.example", seed: "ad2" },
+    { title: "Your inbox, but actually organized. Try the new Type & Tea app.",      domain: "typeandtea.example", seed: "ad3" },
+  ];
+
+  const bdays = BIRTHDAYS.map(b => {
+    const u = USER_BY_ID[b.userId];
+    if (b.when === "today") {
+      return `<div class="birthday-row"><span class="ico">${I.cake}</span><div class="text"><b>${escapeHtml(u.name)}</b> and 1 other have birthdays today.</div></div>`;
+    }
+    return `<div class="birthday-row"><span class="ico">${I.cake}</span><div class="text"><b>${escapeHtml(u.name)}</b>'s birthday is tomorrow.</div></div>`;
+  }).join("");
+
+  const contacts = USERS.slice(0, 14).map(u => `
+    <div class="contact-row" data-user="${u.id}">
+      ${avatarHTML(u)}
+      <div class="name">${escapeHtml(u.name)}</div>
+    </div>
+  `).join("");
+
+  rail.innerHTML = `
+    <div class="rail-title">Sponsored</div>
+    ${sponsored.map(s => `
+      <div class="sponsored">
+        <div class="post-thumb">
+          <div class="img" style="background-image: url('${picsum(s.seed, 260, 260)}');"></div>
+          <div class="text">
+            <div class="title">${escapeHtml(s.title)}</div>
+            <div class="domain">${escapeHtml(s.domain)}</div>
+          </div>
+        </div>
+      </div>
+    `).join("")}
+    <hr class="rail-divider" />
+    <div class="rail-title">Birthdays</div>
+    ${bdays}
+    <hr class="rail-divider" />
+    <div class="rail-title row">
+      <span>Contacts</span>
+      <div class="actions">
+        <button class="icon-btn" title="Video room"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
+        <button class="icon-btn" title="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+        <button class="icon-btn" title="More"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="6" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="18" cy="12" r="1.7"/></svg></button>
+      </div>
+    </div>
+    ${contacts}
+    <hr class="rail-divider" />
+    <div class="rail-title row">
+      <span>Group chats</span>
+      <div class="actions">
+        <button class="icon-btn" title="Create"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+      </div>
+    </div>
+    <div class="contact-row"><span class="avatar" style="background:#ffe7c2; color:#c87b00;">PT</span><div class="name">Photographers TO</div></div>
+    <div class="contact-row"><span class="avatar" style="background:#d4f5d6; color:#1d7e2f;">TR</span><div class="name">Trail Running Co-op</div></div>
+    <div class="contact-row"><span class="avatar" style="background:#dbe4ff; color:#1c3fa3;">FF</span><div class="name">Family thread 🏠</div></div>
+  `;
+}
+
+// ==================== RENDER: STORIES ====================
+function renderStories() {
+  const wrap = document.getElementById("stories");
+  const create = `
+    <div class="story-tile create" id="storyCreate">
+      <div class="photo" style="background-image: url('${avatarUrl(ME.avatarSeed)}'); background-color: var(--card-2);"></div>
+      <div class="footer">
+        Create story
+        <span class="plus"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></span>
+      </div>
+    </div>
+  `;
+  const tiles = STORIES.slice(0, 3).map((s, idx) => {
+    const u = USER_BY_ID[s.user];
+    return `
+      <div class="story-tile" data-story-idx="${idx}">
+        <div class="bg" style="background-image: url('${picsum(s.segments[0], 400, 700)}');"></div>
+        <div class="grad"></div>
+        <div class="author" style="background-image: url('${avatarUrl(u.seed)}'); background-color: var(--card-2);"></div>
+        <div class="name">${escapeHtml(u.name)}</div>
+      </div>
+    `;
+  }).join("");
+  wrap.innerHTML = create + tiles;
+}
+
+// ==================== RENDER: POSTS ====================
+function imagesHTML(images) {
+  if (!images || !images.length) return "";
+  const n = images.length;
+  if (n === 1) return `<div class="images n1"><img src="${images[0]}" alt="" /></div>`;
+  if (n === 2) return `<div class="images n2">${images.map(s => `<img src="${s}" alt="" />`).join("")}</div>`;
+  if (n === 3) return `<div class="images n3">${images.map(s => `<img src="${s}" alt="" />`).join("")}</div>`;
+  if (n === 4) return `<div class="images n4">${images.map(s => `<img src="${s}" alt="" />`).join("")}</div>`;
+  // 5+
+  const first4 = images.slice(0,4);
+  const extra = n - 4;
+  return `<div class="images n4">
+    ${first4.map((s,i) =>
+      i === 3
+        ? `<div class="more" data-more="+${extra}"><img src="${s}" alt="" /></div>`
+        : `<img src="${s}" alt="" />`
+    ).join("")}
+  </div>`;
+}
+
+function summaryRowHTML(post) {
+  const total = reactionTotals(post);
+  if (total === 0 && (!post.comments || !post.comments.length)) return "";
+  const emojis = topReactions(post).map(e => `<span class="e">${e}</span>`).join("");
+  const commentCount = (post.comments || []).reduce((acc, c) => acc + 1 + (c.replies?.length || 0), 0);
+  const shareCount = Math.max(0, Math.floor(total / 18));
+  return `
+    <div class="summary">
+      <div class="reactions-row">
+        <span class="reaction-bubble">${emojis}</span>
+        <span class="label">${total > 0 ? total.toLocaleString() : ""}</span>
+      </div>
+      <div class="meta-right">
+        ${commentCount ? `<span>${commentCount} comments</span>` : ""}
+        ${shareCount ? `<span>${shareCount} shares</span>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+function commentsHTML(post) {
+  const meUser = { ...ME, seed: ME.avatarSeed };
+  const list = (post.comments || []).map(c => {
+    const u = USER_BY_ID[c.authorId] || meUser;
+    const replies = (c.replies || []).map(r => {
+      const ru = USER_BY_ID[r.authorId] || meUser;
+      return `
+        <div class="comment" style="margin-left: 40px;">
+          ${avatarHTML(ru, "sm")}
+          <div>
+            <div class="body">
+              <div class="name">${escapeHtml(ru.name)}</div>
+              <div class="text">${escapeHtml(r.text)}</div>
+            </div>
+            <div class="actions"><span>Like</span><span>Reply</span><span>${escapeHtml(r.time)}</span></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    return `
+      <div class="comment">
+        ${avatarHTML(u, "sm")}
+        <div>
+          <div class="body">
+            <div class="name">${escapeHtml(u.name)}</div>
+            <div class="text">${escapeHtml(c.text)}</div>
+          </div>
+          <div class="actions"><span>Like</span><span>Reply</span><span>${escapeHtml(c.time)}</span></div>
+          ${replies}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="comments" data-comments="${post.id}">
+      ${list}
+      <div class="comment-input-wrap">
+        ${avatarHTML(meUser, "sm")}
+        <div class="input">
+          <input data-comment-input="${post.id}" placeholder="Write a comment..." />
+          <button class="icon-btn" data-comment-emoji>${I.smile}</button>
+          <button class="icon-btn" data-comment-camera>${I.camera}</button>
+          <button class="icon-btn" data-comment-send="${post.id}">${I.send}</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function postHTML(post) {
+  const author = USER_BY_ID[post.authorId] || { id: post.authorId, name: post.sponsorName || "Unknown", seed: "x" };
+  const isMe = post.authorId === ME.id;
+  const displayName = isMe ? ME.name : author.name;
+  const userActive = post.userReaction;
+  const userReact = userActive ? REACT_BY_ID[userActive] : null;
+  const likeText  = userActive ? userReact.label : "Like";
+  const likeCls   = userActive ? `reacted-${userActive}` : "";
+  const likeIcon  = userActive ? `<span style="font-size:20px;">${userReact.emoji}</span>` : I.like;
+
+  let body = "";
+  if (post.kind === "big") {
+    body = `<div class="text big">${escapeHtml(post.text)}</div>`;
+  } else if (post.kind === "link") {
+    body = `
+      ${post.text ? `<div class="text">${escapeHtml(post.text)}</div>` : ""}
+      <div class="link-card">
+        <div class="link-thumb" style="background-image: url('${post.link.thumb}');"></div>
+        <div class="link-body">
+          <div class="link-domain">${escapeHtml(post.link.domain)}</div>
+          <div class="link-title">${escapeHtml(post.link.title)}</div>
+          <div class="link-desc">${escapeHtml(post.link.desc)}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    body = `
+      ${post.text ? `<div class="text">${escapeHtml(post.text)}</div>` : ""}
+      ${imagesHTML(post.images)}
+    `;
+  }
+
+  const sub = post.sponsored
+    ? `Sponsored · ${I.globe.replace('<svg', '<svg style="width:12px;height:12px"')}`
+    : `${escapeHtml(post.time)} · ${I.globe.replace('<svg', '<svg style="width:12px;height:12px"')}`;
+
+  return `
+    <article class="card post" data-post="${post.id}">
+      <div class="head">
+        ${avatarHTML(isMe ? { ...ME, seed: ME.avatarSeed } : author)}
+        <div class="meta">
+          <span class="name">${escapeHtml(displayName)}</span>
+          <div class="sub">${sub}</div>
+        </div>
+        <div class="actions">
+          <button class="icon-btn" title="More">${I.more}</button>
+          <button class="icon-btn" title="Hide" data-hide="${post.id}">${I.close}</button>
+        </div>
+      </div>
+      ${body}
+      ${post.cta ? `<div style="padding: 0 16px 12px;"><button class="btn btn-ghost" style="width:100%;">${escapeHtml(post.cta)}</button></div>` : ""}
+      ${summaryRowHTML(post)}
+      <div class="actions-row">
+        <div class="a like-anchor ${likeCls}" data-like="${post.id}">
+          <div class="reaction-picker" data-picker="${post.id}">
+            ${REACTIONS.map(r => `<span class="e" data-react="${post.id}|${r.id}" title="${r.label}">${r.emoji}</span>`).join("")}
+          </div>
+          ${likeIcon}
+          <span>${likeText}</span>
+        </div>
+        <div class="a" data-comment-toggle="${post.id}">${I.comment}<span>Comment</span></div>
+        <div class="a" data-share="${post.id}">${I.share}<span>Share</span></div>
+      </div>
+      ${commentsHTML(post)}
+    </article>
+  `;
+}
+
+function friendRequestCardHTML(suggestion) {
+  const u = USER_BY_ID[suggestion.userId];
+  if (!u) return "";
+  return `
+    <article class="card fr-card" data-fr="${suggestion.id}">
+      <div class="head">
+        ${avatarHTML(u, "lg")}
+        <div class="meta">
+          <div class="name">${escapeHtml(u.name)}</div>
+          <div class="sub">${suggestion.mutual} mutual friends</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" data-fr-accept="${suggestion.id}">Confirm</button>
+        <button class="btn-ghost" data-fr-decline="${suggestion.id}">Delete</button>
+      </div>
+    </article>
+  `;
+}
+
+// ==================== RENDER: FEED ====================
+function renderFeed() {
+  const list = document.getElementById("feedList");
+  const html = state.posts.map((p, i) => {
+    const card = postHTML(p);
+    if (i === 2) {
+      return card + friendRequestCardHTML(SUGGESTED_FRIENDS[0]);
+    }
+    if (i === 7) {
+      return card + friendRequestCardHTML(SUGGESTED_FRIENDS[1]);
+    }
+    return card;
+  }).join("");
+  list.innerHTML = html;
+}
+
+function renderPostInPlace(postId) {
+  const post = state.posts.find(p => p.id === postId);
+  if (!post) return;
+  const node = document.querySelector(`[data-post="${postId}"]`);
+  if (!node) return;
+  const fresh = el(postHTML(post));
+  node.replaceWith(fresh);
+}
+
+// ==================== RENDER: NOTIFICATIONS / MESSAGES ====================
+function renderNotifications() {
+  const wrap = document.getElementById("notifList");
+  wrap.innerHTML = NOTIFICATIONS.map(n => {
+    const u = USER_BY_ID[n.userId];
+    return `
+      <div class="item ${n.unread ? "unread" : ""}">
+        ${avatarHTML(u)}
+        <div class="body">
+          <div class="text">${n.text}</div>
+          <div class="time">${escapeHtml(n.time)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+function renderMessages() {
+  const wrap = document.getElementById("msgList");
+  wrap.innerHTML = MESSAGES.map(m => {
+    const u = USER_BY_ID[m.userId];
+    return `
+      <div class="item ${m.unread ? "unread" : ""}">
+        ${avatarHTML(u)}
+        <div class="body">
+          <div class="text"><b>${escapeHtml(u.name)}</b></div>
+          <div class="time" style="color: var(--text-2); font-weight: 400;">${escapeHtml(m.text)} · ${escapeHtml(m.time)}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// ==================== INTERACTIVITY: REACTIONS ====================
+let pickerTimer = null;
+let activePicker = null;
+function attachReactionEvents(container) {
+  container.addEventListener("mouseover", (e) => {
+    const btn = e.target.closest("[data-like]");
+    const intoPicker = e.target.closest(".reaction-picker");
+    if (!btn && !intoPicker) return;
+    if (btn) {
+      const id = btn.dataset.like;
+      const picker = btn.querySelector(`[data-picker="${id}"]`);
+      if (picker) {
+        clearTimeout(pickerTimer);
+        if (activePicker && activePicker !== picker) activePicker.classList.remove("show");
+        pickerTimer = setTimeout(() => {
+          picker.classList.add("show");
+          activePicker = picker;
+        }, 350);
+      }
+    } else if (intoPicker) {
+      clearTimeout(pickerTimer);
+    }
+  });
+  container.addEventListener("mouseout", (e) => {
+    const btn = e.target.closest("[data-like]");
+    if (!btn) return;
+    const goingTo = e.relatedTarget;
+    if (goingTo && btn.contains(goingTo)) return;
+    const id = btn.dataset.like;
+    const picker = btn.querySelector(`[data-picker="${id}"]`);
+    clearTimeout(pickerTimer);
+    pickerTimer = setTimeout(() => {
+      picker?.classList.remove("show");
+      if (activePicker === picker) activePicker = null;
+    }, 250);
+  });
+}
+
+function setReaction(postId, reactionId) {
+  const post = state.posts.find(p => p.id === postId);
+  if (!post) return;
+  if (post.userReaction === reactionId) {
+    post.userReaction = null;
+  } else {
+    post.userReaction = reactionId;
+  }
+  persist();
+  renderPostInPlace(postId);
+  const card = document.querySelector(`[data-post="${postId}"]`);
+  card?.querySelector(".like-anchor")?.classList.add("pop");
+}
+
+// ==================== INTERACTIVITY: COMMENTS ====================
+function toggleComments(postId, force) {
+  const wrap = document.querySelector(`[data-comments="${postId}"]`);
+  if (!wrap) return;
+  if (force === true) wrap.classList.add("open");
+  else if (force === false) wrap.classList.remove("open");
+  else wrap.classList.toggle("open");
+}
+
+function submitComment(postId) {
+  const input = document.querySelector(`[data-comment-input="${postId}"]`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const post = state.posts.find(p => p.id === postId);
+  if (!post) return;
+  post.comments = post.comments || [];
+  post.comments.push({
+    id: "cm_" + Date.now(),
+    authorId: ME.id,
+    text,
+    time: "just now",
+    replies: [],
+  });
+  persist();
+  renderPostInPlace(postId);
+  toggleComments(postId, true);
+}
+
+// ==================== INTERACTIVITY: COMPOSER ====================
+const composerModal = document.getElementById("composerModal");
+const postText = document.getElementById("postText");
+const postImageInput = document.getElementById("postImage");
+const postPreview = document.getElementById("postPreview");
+const previewImg = document.getElementById("previewImg");
+
+let pendingImage = null;
+
+function openComposer() {
+  composerModal.classList.add("show");
+  setTimeout(() => postText.focus(), 50);
+}
+function closeComposer() {
+  composerModal.classList.remove("show");
+  postText.value = "";
+  pendingImage = null;
+  postPreview.style.display = "none";
+}
+function submitPost() {
+  const text = postText.value.trim();
+  if (!text && !pendingImage) return;
+  const post = {
+    id: "p_" + Date.now(),
+    authorId: ME.id,
+    time: "just now",
+    text,
+    images: pendingImage ? [pendingImage] : [],
+    reactions: {},
+    userReaction: null,
+    comments: [],
+  };
+  state.posts.unshift(post);
+  persist();
+  renderFeed();
+  closeComposer();
+}
+
+// ==================== INTERACTIVITY: STORIES ====================
+const storyViewer = document.getElementById("storyViewer");
+const storyImg = document.getElementById("storyImg");
+const storyProgress = document.getElementById("storyProgress");
+const storyName = document.getElementById("storyName");
+const storyTime = document.getElementById("storyTime");
+
+let storyState = { setIdx: 0, segIdx: 0, timer: null, paused: false };
+
+function openStory(setIdx) {
+  storyState = { setIdx, segIdx: 0, timer: null, paused: false };
+  storyViewer.classList.add("show");
+  paintStory();
+}
+function closeStory() {
+  storyViewer.classList.remove("show");
+  clearTimeout(storyState.timer);
+}
+function paintStory() {
+  const set = STORIES[storyState.setIdx];
+  if (!set) { closeStory(); return; }
+  const u = USER_BY_ID[set.user];
+  const seg = set.segments[storyState.segIdx];
+  storyImg.style.backgroundImage = `url('${picsum(seg, 400, 700)}')`;
+  storyName.textContent = u.name;
+  storyTime.textContent = `${storyState.segIdx + 1}/${set.segments.length}`;
+  // Replace avatar by morphing the existing node so the reference stays valid
+  const avatarHost = document.querySelector(".story-viewer .header .avatar");
+  if (avatarHost) {
+    const newAv = el(avatarHTML(u, "sm"));
+    avatarHost.replaceWith(newAv);
+  }
+  storyProgress.innerHTML = set.segments.map((_, i) => `
+    <div class="seg ${i < storyState.segIdx ? "done" : ""} ${i === storyState.segIdx ? "active" : ""}"><div class="fill"></div></div>
+  `).join("");
+  clearTimeout(storyState.timer);
+  storyState.timer = setTimeout(advanceStory, 5000);
+}
+function advanceStory() {
+  const set = STORIES[storyState.setIdx];
+  if (!set) { closeStory(); return; }
+  if (storyState.segIdx + 1 < set.segments.length) {
+    storyState.segIdx += 1;
+    paintStory();
+  } else if (storyState.setIdx + 1 < STORIES.length) {
+    storyState.setIdx += 1;
+    storyState.segIdx = 0;
+    paintStory();
+  } else {
+    closeStory();
+  }
+}
+function prevStory() {
+  if (storyState.segIdx > 0) {
+    storyState.segIdx -= 1;
+  } else if (storyState.setIdx > 0) {
+    storyState.setIdx -= 1;
+    storyState.segIdx = 0;
+  }
+  paintStory();
+}
+
+// ==================== INTERACTIVITY: DROPDOWNS ====================
+const ddNotif = document.getElementById("ddNotif");
+const ddMessenger = document.getElementById("ddMessenger");
+const ddProfile = document.getElementById("ddProfile");
+const searchDropdown = document.getElementById("searchDropdown");
+const allDropdowns = [ddNotif, ddMessenger, ddProfile, searchDropdown];
+
+function closeAllDropdowns(except) {
+  allDropdowns.forEach(d => { if (d !== except) d.classList.remove("show"); });
+}
+function toggleDropdown(d) {
+  const open = d.classList.contains("show");
+  closeAllDropdowns(d);
+  d.classList.toggle("show", !open);
+}
+
+// ==================== INTERACTIVITY: SEARCH ====================
+function renderSearch(q) {
+  if (!q) {
+    searchDropdown.innerHTML = `
+      <div class="group-title">Recent</div>
+      <div class="item">${avatarHTML(USER_BY_ID["u1"], "sm")}<div><div class="label">${escapeHtml(USER_BY_ID["u1"].name)}</div><div class="sub">Friend</div></div></div>
+      <div class="item">${avatarHTML(USER_BY_ID["u4"], "sm")}<div><div class="label">${escapeHtml(USER_BY_ID["u4"].name)}</div><div class="sub">Friend</div></div></div>
+      <div class="item">${avatarHTML(USER_BY_ID["u11"], "sm")}<div><div class="label">${escapeHtml(USER_BY_ID["u11"].name)}</div><div class="sub">Friend</div></div></div>
+    `;
+    return;
+  }
+  const ql = q.toLowerCase();
+  const matches = SEARCH_INDEX
+    .filter(x => x.label.toLowerCase().includes(ql) || x.sub.toLowerCase().includes(ql))
+    .slice(0, 12);
+  if (!matches.length) {
+    searchDropdown.innerHTML = `<div class="empty">No results for "${escapeHtml(q)}"</div>`;
+    return;
+  }
+  // Group
+  const grouped = {};
+  matches.forEach(m => { (grouped[m.kind] = grouped[m.kind] || []).push(m); });
+  searchDropdown.innerHTML = Object.entries(grouped).map(([kind, items]) => `
+    <div class="group-title">${escapeHtml(kind + "s")}</div>
+    ${items.map(m => `
+      <div class="item">
+        ${kind === "Person"
+          ? avatarHTML({ ...USER_BY_ID[USERS.find(u => u.name === m.label)?.id] || { name: m.label, seed: m.seed }, name: m.label, seed: m.seed }, "sm")
+          : `<span class="avatar sm" style="background-image: url('${picsum(m.seed, 80, 80)}'); background-size: cover;"></span>`}
+        <div>
+          <div class="label">${escapeHtml(m.label)}</div>
+          <div class="sub">${escapeHtml(m.sub)}</div>
+        </div>
+      </div>
+    `).join("")}
+  `).join("");
+}
+
+// ==================== INTERACTIVITY: THEME ====================
+function applyTheme() {
+  document.body.setAttribute("data-theme", state.theme);
+  const lbl = document.getElementById("themeLabel");
+  if (lbl) lbl.textContent = state.theme === "dark" ? "Dark mode" : "Light mode";
+}
+function toggleTheme() {
+  state.theme = state.theme === "dark" ? "light" : "dark";
+  applyTheme();
+  persist();
+}
+
+// ==================== INTERACTIVITY: INFINITE SCROLL ====================
+function appendMorePosts() {
+  // Cycle through seed posts with new IDs to feel infinite
+  const newOnes = SEED_POSTS.slice(0, 5).map((p, i) => ({
+    ...JSON.parse(JSON.stringify(p)),
+    id: p.id + "_x" + state.feedOffset + "_" + i,
+    time: p.time,
+  }));
+  state.feedOffset += 1;
+  state.posts.push(...newOnes);
+  const list = document.getElementById("feedList");
+  list.insertAdjacentHTML("beforeend", newOnes.map(postHTML).join(""));
+}
+
+// ==================== INTERACTIVITY: LIGHTBOX ====================
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+function openLightbox(src) {
+  lightboxImg.src = src;
+  lightbox.classList.add("show");
+}
+function closeLightbox() {
+  lightbox.classList.remove("show");
+}
+
+// ==================== EVENT WIRING ====================
+function wireEvents() {
+  // Header tabs
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+    });
+  });
+
+  // Header buttons
+  document.getElementById("btnNotif").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleDropdown(ddNotif);
+    document.getElementById("notifBadge").style.display = "none";
+  });
+  document.getElementById("btnMessenger").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleDropdown(ddMessenger);
+  });
+  document.getElementById("btnProfile").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleDropdown(ddProfile);
+  });
+  document.getElementById("btnMenu").addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeAllDropdowns();
+  });
+
+  document.getElementById("logo").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Outside click to close dropdowns
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".dropdown") &&
+        !e.target.closest(".search-dropdown") &&
+        !e.target.closest("#btnNotif") &&
+        !e.target.closest("#btnMessenger") &&
+        !e.target.closest("#btnProfile") &&
+        !e.target.closest("#searchInput")) {
+      closeAllDropdowns();
+    }
+  });
+
+  // Theme toggle
+  document.getElementById("toggleTheme").addEventListener("click", toggleTheme);
+
+  // Search
+  const search = document.getElementById("searchInput");
+  search.addEventListener("focus", () => {
+    renderSearch("");
+    closeAllDropdowns(searchDropdown);
+    searchDropdown.classList.add("show");
+  });
+  search.addEventListener("input", (e) => {
+    renderSearch(e.target.value);
+    searchDropdown.classList.add("show");
+  });
+  search.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { search.blur(); closeAllDropdowns(); }
+  });
+
+  // Composer
+  document.getElementById("composerOpen").addEventListener("click", openComposer);
+  document.getElementById("openPhoto").addEventListener("click", () => {
+    openComposer();
+    setTimeout(() => postImageInput.click(), 100);
+  });
+  composerModal.addEventListener("click", (e) => {
+    if (e.target === composerModal || e.target.closest("[data-close]")) closeComposer();
+  });
+  document.getElementById("postSubmit").addEventListener("click", submitPost);
+  postImageInput.addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      pendingImage = ev.target.result;
+      previewImg.src = ev.target.result;
+      postPreview.style.display = "block";
+    };
+    reader.readAsDataURL(f);
+  });
+  document.getElementById("removePreview").addEventListener("click", () => {
+    pendingImage = null;
+    postPreview.style.display = "none";
+    postImageInput.value = "";
+  });
+
+  // Stories
+  document.getElementById("stories").addEventListener("click", (e) => {
+    if (e.target.closest("#storyCreate")) {
+      openComposer();
+      return;
+    }
+    const tile = e.target.closest("[data-story-idx]");
+    if (tile) openStory(parseInt(tile.dataset.storyIdx, 10));
+  });
+  document.getElementById("storyClose").addEventListener("click", closeStory);
+  document.getElementById("storyNext").addEventListener("click", advanceStory);
+  document.getElementById("storyPrev").addEventListener("click", prevStory);
+  document.getElementById("tapNext").addEventListener("click", advanceStory);
+  document.getElementById("tapPrev").addEventListener("click", prevStory);
+  storyViewer.addEventListener("click", (e) => {
+    if (e.target === storyViewer) closeStory();
+  });
+
+  // Lightbox
+  document.getElementById("lightboxClose").addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+
+  // Feed delegation: like, comment toggle, share, hide, react picker, image lightbox, friend request
+  const feedList = document.getElementById("feedList");
+  attachReactionEvents(feedList);
+  feedList.addEventListener("click", (e) => {
+    // Like toggle
+    const likeBtn = e.target.closest("[data-like]");
+    if (likeBtn && !e.target.closest("[data-react]")) {
+      const id = likeBtn.dataset.like;
+      const post = state.posts.find(p => p.id === id);
+      setReaction(id, post.userReaction ? post.userReaction : "like");
+      return;
+    }
+    // Specific reaction
+    const reactBtn = e.target.closest("[data-react]");
+    if (reactBtn) {
+      const [pid, rid] = reactBtn.dataset.react.split("|");
+      setReaction(pid, rid);
+      return;
+    }
+    // Comment toggle
+    const commentBtn = e.target.closest("[data-comment-toggle]");
+    if (commentBtn) {
+      const id = commentBtn.dataset.commentToggle;
+      toggleComments(id);
+      const inp = document.querySelector(`[data-comment-input="${id}"]`);
+      setTimeout(() => inp?.focus(), 50);
+      return;
+    }
+    // Send comment
+    const sendBtn = e.target.closest("[data-comment-send]");
+    if (sendBtn) {
+      submitComment(sendBtn.dataset.commentSend);
+      return;
+    }
+    // Share
+    const shareBtn = e.target.closest("[data-share]");
+    if (shareBtn) {
+      const post = state.posts.find(p => p.id === shareBtn.dataset.share);
+      if (post) {
+        if (navigator.share) {
+          navigator.share({ title: "Facebook post", text: post.text || "Check this out" }).catch(()=>{});
+        } else {
+          alert("Shared! (demo)");
+        }
+      }
+      return;
+    }
+    // Hide
+    const hideBtn = e.target.closest("[data-hide]");
+    if (hideBtn) {
+      const id = hideBtn.dataset.hide;
+      state.posts = state.posts.filter(p => p.id !== id);
+      persist();
+      renderFeed();
+      return;
+    }
+    // Image lightbox
+    const img = e.target.closest(".images img");
+    if (img) {
+      openLightbox(img.src);
+      return;
+    }
+    // Friend request
+    const acc = e.target.closest("[data-fr-accept]");
+    const dec = e.target.closest("[data-fr-decline]");
+    if (acc || dec) {
+      const id = (acc || dec).dataset.frAccept || (acc || dec).dataset.frDecline;
+      const card = document.querySelector(`[data-fr="${id}"]`);
+      if (card) {
+        if (acc) {
+          card.innerHTML = `<div style="padding:24px; text-align:center; color: var(--text-2);">Friend request accepted ✓</div>`;
+        } else {
+          card.style.transition = "opacity 0.2s";
+          card.style.opacity = "0";
+          setTimeout(() => card.remove(), 200);
+        }
+      }
+    }
+  });
+
+  // Comment enter key
+  feedList.addEventListener("keydown", (e) => {
+    const input = e.target.closest("[data-comment-input]");
+    if (input && e.key === "Enter") {
+      submitComment(input.dataset.commentInput);
+    }
+  });
+
+  // Right rail contact click → opens messenger
+  document.getElementById("rightRail").addEventListener("click", (e) => {
+    if (e.target.closest("[data-user]")) {
+      toggleDropdown(ddMessenger);
+    }
+  });
+
+  // Keyboard
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "/" && !["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      document.getElementById("searchInput").focus();
+    }
+    if (e.key === "Escape") {
+      closeAllDropdowns();
+      closeStory();
+      closeLightbox();
+      if (composerModal.classList.contains("show")) closeComposer();
+    }
+    if (storyViewer.classList.contains("show")) {
+      if (e.key === "ArrowRight") advanceStory();
+      if (e.key === "ArrowLeft")  prevStory();
+    }
+  });
+
+  // Infinite scroll
+  const sentinel = document.getElementById("sentinel");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) appendMorePosts();
+    });
+  }, { rootMargin: "400px" });
+  io.observe(sentinel);
+}
+
+// ==================== INIT ====================
+function init() {
+  hydrate();
+  applyTheme();
+  renderHeaderAvatars();
+  renderLeftRail();
+  renderRightRail();
+  renderStories();
+  renderFeed();
+  renderNotifications();
+  renderMessages();
+  wireEvents();
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
