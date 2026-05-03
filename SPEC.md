@@ -1,85 +1,66 @@
-# AOK Registry — Specification
+# AOK Catalog — Specification
 
 ## Overview
 
-A green-and-white social network UI. Visitors sign up on first visit, then post, react, and comment. All state is stored in `localStorage` — no backend.
+A politics-themed community feed. Members sign up, follow topics, share takes tagged by issue, react and comment, and see trending topics, live polls, and an election countdown alongside their feed. Two monetization surfaces are wired in (sponsored slot, premium subscription tease) but inactive — they are placeholders for AdSense + Stripe integration.
 
 ---
 
 ## Feature Requirements
 
-### Welcome / Sign-up
+### Sign-up
 
-- First visit: full-screen overlay with branded header, name (required), email + bio (optional)
-- "Already have an account on this device?" → sign-in mode that picks an existing local account by name
-- All accounts on the device are stored together; current logged-in user is `state.me`
-- Sign out clears `state.me` and re-shows the welcome overlay
+- Welcome overlay (full-screen) with brand panel
+- Required: name. Optional: email, city/state, picked issues
+- Sign-in mode for returning visitors (matches by name on this device)
+- All accounts on the device live in `state.users`; current user is `state.me`
 
 ### Top Navigation
 
 | Region | Contents |
 |---|---|
-| Left | AOK logo, "Registry" wordmark, search box (type-ahead) |
-| Center | Tabs: Home · People · Groups · Saved |
-| Right | Notifications, Profile (with dropdown) |
+| Left | AOK navy-circle logo, "Catalog" wordmark, search box (type-ahead) |
+| Center | Tabs: News · Topics · Candidates · Polls · Op-Eds |
+| Right | "GO PRO" CTA button, Notifications, Profile dropdown |
 
 ### Left Rail
 
-- Profile shortcut (avatar + name)
-- People, Groups, Memories, Saved, Events
-- Invite-friends prompt with the share-this-URL hint
-- Footer: Privacy / Terms / About
+- Profile shortcut
+- Browse: News feed · Trending · Issues · Candidates · Polls · Congress watch · Saved articles
+- Your issues — chips of the topics this user follows
+- Footer: Privacy / Terms / Editorial standards
 
 ### Center Feed
 
-1. **Stories carousel** — Create-story tile + placeholder slots (no fake stories)
-2. **Post composer** — input, Photo / Tag / Feeling buttons
-3. **News feed** — user-created posts only, with rich empty state when empty
+- Composer with three actions: Photo · Link · Topic
+- Composer modal includes a topic-tag picker (chips for all 12 issues)
+- Posts render with optional issue chip below the author row
+- Empty state when no posts
 
 ### Right Rail
 
-- People list — every other account on this device
-- Quick-link section (Create post, Find people, Notifications)
-
-### Post Card
-
-```
-┌──────────────────────────────────────────┐
-│ avatar  Author Name                ··· ✕ │
-│         2h · 🌍                          │
-├──────────────────────────────────────────┤
-│ Text content                             │
-│ [optional uploaded image]                │
-├──────────────────────────────────────────┤
-│ 👍❤️😆 24            5 comments          │
-├──────────────────────────────────────────┤
-│   👍 Like     💬 Comment     ↗ Share     │
-├──────────────────────────────────────────┤
-│  avatar  Comment thread...               │
-│  [Write a comment...                    ]│
-└──────────────────────────────────────────┘
-```
+- **Election countdown** — large card to next U.S. midterm (Nov 3 2026)
+- **Live poll** — current question with one-vote-per-device, animated percentage fills
+- **Trending today** — curated list of topical sections
+- **Sponsored card** — gold-bordered, clearly labeled ad placeholder (hidden if `state.isPro`)
 
 ### Reactions
 
-Hover the Like button to reveal: 👍 Like · ❤️ Love · 🤗 Care · 😆 Haha · 😮 Wow · 😢 Sad · 😡 Angry. Counts and the user's choice persist in `localStorage`.
+`👍 Up · ❤️ Strong agree · 😆 Haha · 😮 Whoa · 😢 Sad · 😡 Strong disagree`
+
+The labels are tuned for civic discourse — "Strong agree / Strong disagree" replaces "Love / Angry" to encourage positional rather than emotional signaling.
+
+### Comments
+
+Threaded under each post; uppercase action labels (Up · Reply · timestamp) for newsprint feel.
+
+### Catalog Pro
+
+Modeled subscription tier. "GO PRO" header CTA, banner inside the profile dropdown, and a dedicated modal with feature list ($9/mo). Subscribing (demo) flips `state.isPro = true` and hides the sponsored slot.
 
 ### Edit Profile
 
-Profile dropdown → "Edit profile" → modal with name, email, bio. Saving updates both `state.me` and the entry in `state.users`.
-
-### Notifications
-
-A welcome notification is generated on first sign-up. Future expansion can append to `state.notifications` for likes/comments. Unread count appears as a badge on the bell icon.
-
-### Search
-
-- Empty query: shows local accounts
-- Typed query: matches on user names + post text, grouped as "People" and "Posts"
-
-### Dark Mode
-
-Toggle in profile dropdown; persisted in `state.theme`.
+Profile dropdown → Edit profile → modal with name, email, city/state, issues picker.
 
 ---
 
@@ -87,72 +68,82 @@ Toggle in profile dropdown; persisted in `state.theme`.
 
 | Token | Light | Dark |
 |---|---|---|
-| Background | `#f3f7f4` | `#0e1612` |
-| Card | `#ffffff` | `#1a221c` |
-| Hover | `#ecf2ed` | `#2a342d` |
-| Border | `#cdd8d1` | `#2c3830` |
-| Text primary | `#0d1c12` | `#e2ebe5` |
-| Text secondary | `#4d5e54` | `#a3b3a8` |
-| Brand green | `#1d8a3e` | `#2db05c` |
-| Accent red (love/notif) | `#d23a4d` | `#d23a4d` |
+| Background | `#faf8f3` (newsprint cream) | `#14181f` |
+| Card | `#ffffff` | `#1c2230` |
+| Hover | `#efebe0` | `#2a3142` |
+| Border | `#dad6cb` | `#2c3343` |
+| Text primary | `#1a1a1a` | `#e6e9ef` |
+| Brand navy | `#0f2f6e` | `#5286e0` |
+| Accent red | `#c1272d` | `#e35861` |
+| Civic green | `#2f8c4a` | `#2f8c4a` |
+| Civic gold | `#b08a2a` | `#b08a2a` |
 
-Typography: `'Segoe UI', 'Helvetica Neue', system-ui, sans-serif`
-Avatars: locally-generated initials on a hue-hashed colored background — no third-party avatar service.
+Typography:
+- Headlines / brand: `Georgia, 'Times New Roman', serif`
+- Body / UI: `'Segoe UI', 'Helvetica Neue', system-ui, sans-serif`
+
+Avatars: locally-generated initials on hue-bucketed civic-palette backgrounds (navy/red/gold/teal).
 
 ---
 
 ## Technical Architecture
 
-### Tech Stack
-
-| Layer | Choice | Reason |
-|---|---|---|
-| Runtime | Vanilla HTML/CSS/JS, single file | Zero deps, no build, no CDN |
-| Storage | `localStorage` (`aok-registry-state-v1`) | Survives refresh; private to each browser |
-| Avatars | Inline initials + HSL hash of name | No external service; fully offline |
-| Icons | Inline SVG | Themable via `currentColor` |
-
 ### State Shape
 
 ```js
 {
-  me: { id, name, email, bio, color, joinedAt } | null,
-  users: [ { id, name, email, bio, color, joinedAt } ],
-  posts: [ { id, authorId, time, text, images } ],
+  me: { id, name, email, bio, issues[], color, joinedAt } | null,
+  users: [...],
+  posts: [ { id, authorId, time, text, images[], issue } ],
   reactions: { [postId]: reactionId },
   reactionCounts: { [postId]: { [reactionId]: number } },
-  comments: { [postId]: [ { id, authorId, text, time } ] },
-  notifications: [ { id, text, time, unread } ],
+  comments: { [postId]: [...] },
+  notifications: [...],
+  votes: { [pollId]: optionId },
+  pollCounts: { [pollId]: { [optionId]: number } },
+  isPro: boolean,
   theme: "light" | "dark"
 }
 ```
+
+Stored in `localStorage` under `aok-catalog-state-v1`.
+
+### Data
+
+- `ISSUES` — 12 hard-coded issue categories with color classes
+- `TRENDING` — 5 curated topic rows (right rail)
+- `POLLS` — single seeded poll with realistic baseline counts
+- `ELECTION` — fixed date (Nov 3, 2026)
+- No fake users, no fake posts, no fake comments
 
 ### Files
 
 ```
 AOK Registry/
-├── SPEC.md              ← this document
-├── index.html           ← entire app (HTML + CSS + JS)
-├── IMPLEMENTATION.md    ← phased build plan
-└── README.md            ← run / deploy
+├── SPEC.md
+├── IMPLEMENTATION.md
+├── README.md
+├── index.html
+├── vercel.json
+└── .gitignore
 ```
+
+---
+
+## Monetization Hooks
+
+| Surface | State | What's needed to activate |
+|---|---|---|
+| Sponsored card | Static placeholder | Drop in AdSense script + apply for approval |
+| Catalog Pro modal | Modeled UI; `state.isPro` flips ad visibility | Add Stripe Checkout link, gate `state.isPro` on real payment webhook |
+| Premium content | None yet | Add a `premium: true` flag on posts and a paywall component |
 
 ---
 
 ## Non-Functional Requirements
 
-- Fully offline (no network calls of any kind)
-- No build step
-- Responsive at ≥1024px (rails collapse below)
-- Accessible: keyboard nav for dropdowns/modals, ARIA-friendly markup
-- Honest: a banner in the welcome dialog and README notes that state is per-device only
-
----
-
-## Future Work (when a backend is added)
-
-- Replace `localStorage` reads/writes with API calls (Supabase Auth + Postgres or Firebase)
-- Email verification on sign-up
-- Friend requests + privacy controls
-- Real stories with auto-expire
-- Real cross-device notifications
+- Fully offline (no network calls)
+- No build step; single file
+- Responsive at ≥1180px (rails collapse below)
+- Honest disclosure: README and welcome dialog flag local-only state and unactivated ad surfaces
+- Civic chrome: balanced palette, neutral category names, factual data (real election date)

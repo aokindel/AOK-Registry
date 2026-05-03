@@ -1,32 +1,37 @@
-# AOK Registry
+# AOK Catalog
 
-A clean, green-and-white social network UI. Sign up, share posts, react and comment, all from a single self-contained HTML file.
+> *Politics, decoded — for citizens, not algorithms.*
+
+A politics-first community web app: news feed, topic tags, candidate browsing, live polls, election countdown, and member-driven discussion. Single self-contained HTML file. Navy / red / cream civic palette.
 
 ## Features
 
-- **Welcome / sign-up flow** — first visitor enters name (+ optional email/bio) and becomes the device's account
-- **Multi-account on one device** — friends visiting on the same browser can each create their own account and switch between them
-- **Post composer** — text + image upload, persists to localStorage
-- **Reactions** — full 7-emoji picker (Like, Love, Care, Haha, Wow, Sad, Angry)
-- **Comments** — expandable threads, write & post
-- **News feed** with empty state when there are no posts yet
-- **People rail** — every account on this device shows up here
-- **Notifications** with unread badge
-- **Search** — type-ahead across people on this device + post text
-- **Edit profile** — change name, email, bio anytime
-- **Dark mode** — toggle in profile menu, persists
-- **Keyboard shortcuts** — `/` focuses search, `Esc` closes modals
-- **Zero dependencies** — single `index.html`, no build step, no external CDNs
+- **Sign-up flow** — name, email, location, plus an "issues you follow" picker
+- **Topic-tagged posts** — every post can be tagged with an issue (Economy, Healthcare, Foreign Policy, Climate, Civil Rights, Elections, Education, Immigration, Tech & AI, Housing, Courts, Energy)
+- **Civic-tuned reactions** — Up · Strong agree · Haha · Whoa · Sad · Strong disagree
+- **Comments** — threaded discussion under every post
+- **Live polls** — one-vote-per-device, real-time percentages with seeded baseline counts
+- **Election countdown** — to the next U.S. midterm (Nov 3, 2026)
+- **Trending topics** — curated topic categories surfaced in the right rail
+- **Sponsored slot** — clearly labeled ad placement (revenue surface #1)
+- **Catalog Pro tease** — premium subscription modal at $9/mo, ad-free + premium analysis (revenue surface #2)
+- **Search** — type-ahead across topics, members, and posts
+- **Dark mode** — toggle persists
+- **Empty states** throughout — no fake people, no synthetic content
+- **Zero dependencies** — single HTML file, no build, no CDN, no API keys
 
-## Important: this is frontend-only
+## Monetization model (modeled, not active)
 
-All accounts and posts are stored in your **browser's localStorage**. That means:
+The UI demonstrates two revenue paths a politics-themed publisher commonly uses:
 
-- Each visitor on each device has their own private feed.
-- Friends on different devices **cannot see each other's posts** unless they are at the same browser.
-- Clearing browser data wipes the account.
+1. **Display ads** — the right-rail "Sponsored" card is a placeholder for an ad-network slot (Google AdSense, Mediavine, etc.). To turn it on, swap the static placeholder for the network's script tag and apply for inclusion. Political content can have lower CPMs and stricter policies — read each network's content rules before integrating.
+2. **Premium subscription** — the "Catalog Pro · $9/mo" banner and modal model a subscription tier (ad-free + exclusive content). To turn it on, integrate Stripe Checkout (or Paddle/Lemon Squeezy) and gate the sponsored block + a premium-content collection behind the `state.isPro` flag (already in place in `index.html`).
 
-To make this a real social network where friends on different devices can see each other's posts, you'd need to wire up a backend (Supabase, Firebase, or a serverless KV store like Vercel KV). The frontend is structured so you could swap localStorage for an API client without rewriting the UI.
+**Honest note on the strategy.** Politics-first engagement businesses face well-documented risks around polarization, rage-farming, and misinformation amplification. The serious players in this category — *RealClearPolitics*, *The Dispatch*, *Lawfare*, *Vox*, *FiveThirtyEight* — invest heavily in editorial standards, sourcing, and balance, because that's what makes audiences durable rather than just viral. If you want this to last, the moat is editorial quality, not outrage volume. The chrome here (topic tags, balanced palette, factual countdown) leans toward that direction; the rest is up to what you publish.
+
+## Important: still frontend-only
+
+All accounts and posts live in the browser's `localStorage`. Friends on different devices won't see each other's content until you add a backend (Supabase, Firebase, Vercel KV/Postgres). The frontend is structured so the persistence layer can be swapped without rewriting the UI.
 
 ## Run Locally
 
@@ -34,9 +39,8 @@ To make this a real social network where friends on different devices can see ea
 # Windows
 start index.html
 
-# Or serve over http (recommended)
+# Or serve over http
 python -m http.server 8080
-# then visit http://localhost:8080
 ```
 
 ```bash
@@ -57,27 +61,23 @@ vercel
 Or via the dashboard: https://vercel.com/new → Import `aokindel/AOK-Registry` → Deploy.
 
 ### GitHub Pages
-1. Push to GitHub
-2. Repo Settings → Pages → Source: `main` / `/` (root)
-3. Live at `https://<username>.github.io/AOK-Registry/`
+Settings → Pages → Source `main` / `/` → live at `https://aokindel.github.io/AOK-Registry/`
 
 ## Project Structure
 
 ```
 AOK Registry/
 ├── index.html          # Complete app (HTML + CSS + JS)
-├── vercel.json         # Vercel deployment config
+├── vercel.json
 ├── .gitignore
 ├── README.md
-├── SPEC.md             # Feature specification
-└── IMPLEMENTATION.md   # Build plan
+├── SPEC.md
+└── IMPLEMENTATION.md
 ```
 
 ## Reset
 
-To wipe local accounts/posts and start fresh:
-- DevTools → Application → Local Storage → clear, or
-- Run `localStorage.clear()` in the console
+`localStorage.clear()` in the console wipes accounts, posts, and Pro state.
 
 ## Browser Support
 
