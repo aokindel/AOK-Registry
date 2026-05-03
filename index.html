@@ -982,7 +982,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 <body data-theme="light">
 
 <!-- ============== WELCOME / SIGN-UP ============== -->
-<div class="welcome" id="welcome">
+<div class="welcome" id="welcome" style="display:none;">
   <button class="welcome-close" id="welcomeClose" title="Continue browsing">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
   </button>
@@ -1138,7 +1138,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 </main>
 
 <!-- ============== MODALS ============== -->
-<div class="modal-overlay" id="composerModal">
+<div class="modal-overlay" id="composerModal" style="display:none;">
   <div class="modal">
     <div class="head">
       Create post
@@ -1180,7 +1180,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 </div>
 
 <!-- Edit profile modal -->
-<div class="modal-overlay" id="profileModal">
+<div class="modal-overlay" id="profileModal" style="display:none;">
   <div class="modal">
     <div class="head">
       Edit profile
@@ -1209,7 +1209,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 </div>
 
 <!-- Pro modal -->
-<div class="modal-overlay" id="proModal">
+<div class="modal-overlay" id="proModal" style="display:none;">
   <div class="modal">
     <div class="head">
       Catalog Pro
@@ -1236,7 +1236,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 </div>
 
 <!-- Lightbox -->
-<div class="lightbox" id="lightbox">
+<div class="lightbox" id="lightbox" style="display:none;">
   <button class="close-x" id="lightboxClose">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
   </button>
@@ -1463,8 +1463,14 @@ const suBio = document.getElementById("suBio");
 const suSubmit = document.getElementById("suSubmit");
 let isSignIn = false;
 
-function showWelcome() { welcome.classList.add("show"); setTimeout(() => suName.focus(), 100); }
-function hideWelcome() { welcome.classList.remove("show"); }
+function showWelcome() {
+  welcome.style.display = "";  // clear inline display:none so .show CSS rule applies
+  welcome.classList.add("show");
+  setTimeout(() => suName.focus(), 100);
+}
+function hideWelcome() {
+  welcome.classList.remove("show");
+}
 
 function setMode(signIn) {
   isSignIn = signIn;
@@ -2015,6 +2021,7 @@ function openComposer() {
   document.getElementById("modalName").textContent = me.name;
   postText.placeholder = `What's the take, ${me.name.split(" ")[0]}?`;
   renderTopicPicker();
+  composerModal.style.display = "";
   composerModal.classList.add("show");
   setTimeout(() => postText.focus(), 50);
 }
@@ -2048,6 +2055,7 @@ function openEditProfile() {
   document.getElementById("epName").value = state.me.name;
   document.getElementById("epEmail").value = state.me.email || "";
   document.getElementById("epBio").value = state.me.bio || "";
+  profileModal.style.display = "";
   profileModal.classList.add("show");
 }
 function closeEditProfile() { profileModal.classList.remove("show"); }
@@ -2069,7 +2077,7 @@ function saveProfile() {
 
 // ==================== PRO MODAL ====================
 const proModal = document.getElementById("proModal");
-function openPro() { proModal.classList.add("show"); }
+function openPro() { proModal.style.display = ""; proModal.classList.add("show"); }
 function closePro() { proModal.classList.remove("show"); }
 function subscribePro() {
   state.isPro = true;
@@ -2143,7 +2151,7 @@ function toggleTheme() {
 // ==================== LIGHTBOX ====================
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
-function openLightbox(src) { lightboxImg.src = src; lightbox.classList.add("show"); }
+function openLightbox(src) { lightboxImg.src = src; lightbox.style.display = ""; lightbox.classList.add("show"); }
 function closeLightbox() { lightbox.classList.remove("show"); }
 
 // ==================== EVENTS ====================
