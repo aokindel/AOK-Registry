@@ -160,8 +160,16 @@ body[data-theme="dark"] .icon-btn:hover { background: #344038; }
   font-weight: 700; font-size: 13px;
   letter-spacing: 0.3px;
   cursor: pointer;
+  display: inline-flex; align-items: center;
 }
 .btn-pro:hover { background: var(--brand-hover); }
+.btn-pro.ghost {
+  background: transparent;
+  color: var(--brand);
+  border: 1px solid var(--brand);
+}
+.btn-pro.ghost:hover { background: var(--brand-soft); color: var(--brand); }
+.hidden { display: none !important; }
 
 /* ===== Layout ===== */
 main.shell {
@@ -628,10 +636,27 @@ body[data-theme="dark"] .skeleton {
 /* ===== Welcome ===== */
 .welcome {
   position: fixed; inset: 0; z-index: 3000;
-  background: linear-gradient(135deg, #1d8a3e 0%, #176c30 100%);
+  background: linear-gradient(135deg, rgba(29,138,62,0.96) 0%, rgba(23,108,48,0.96) 100%);
   display: none; align-items: center; justify-content: center;
   padding: 16px;
 }
+.welcome-close {
+  position: absolute; top: 20px; right: 20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  color: #fff; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  z-index: 1;
+}
+.welcome-close:hover { background: rgba(255,255,255,0.3); }
+.welcome-close svg { width: 20px; height: 20px; }
+.welcome .browse-link {
+  display: block; text-align: center; margin-top: 14px;
+  color: var(--text-2); font-size: 13px;
+  cursor: pointer;
+}
+.welcome .browse-link:hover { color: var(--brand); text-decoration: underline; }
 .welcome.show { display: flex; }
 .welcome .panel {
   background: var(--card);
@@ -958,6 +983,9 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
 
 <!-- ============== WELCOME / SIGN-UP ============== -->
 <div class="welcome" id="welcome">
+  <button class="welcome-close" id="welcomeClose" title="Continue browsing">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+  </button>
   <div class="panel">
     <div class="brand">
       <div class="brand-mark">AOK</div>
@@ -981,6 +1009,7 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
     <div class="switch" id="switchMode">
       Already signed up on this device? <a id="switchLink">Sign in</a>
     </div>
+    <a class="browse-link" id="browseLink">Just browse — I'll sign up later</a>
     <div class="legal">
       AOK Catalog is a private demo. Your account lives on this device only.
     </div>
@@ -1015,6 +1044,8 @@ body[data-theme="dark"] .dropdown.profile .menu-item .ico { background: #344038;
   </div>
 
   <div class="bar-right">
+    <button class="btn-pro ghost" id="btnLogin">Log in</button>
+    <button class="btn-pro" id="btnSignup">Sign up</button>
     <button class="btn-pro" id="btnPro" title="Catalog Pro">Go Pro</button>
     <button class="icon-btn" title="Notifications" id="btnNotif">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22zm6.4-7.4V11c0-3.4-2.1-6.2-5.4-6.85V3.5a1 1 0 10-2 0v.65C7.7 4.8 5.6 7.6 5.6 11v3.6L4 16.4V18h16v-1.6l-1.6-1.8z"/></svg>
@@ -1480,30 +1511,66 @@ function createAccount() {
   }
   persist();
   hideWelcome();
+  // Reset welcome inputs for next time
+  suName.value = ""; suEmail.value = ""; suBio.value = "";
   initApp();
 }
-function signOut() { state.me = null; persist(); showWelcome(); }
+function signOut() { state.me = null; persist(); initApp(); }
 
 // ==================== HEADER ====================
 function renderHeader() {
-  if (!state.me) return;
+  const signedIn = !!state.me;
+  document.getElementById("btnLogin").classList.toggle("hidden", signedIn);
+  document.getElementById("btnSignup").classList.toggle("hidden", signedIn);
+  document.getElementById("btnPro").classList.toggle("hidden", !signedIn);
+  document.getElementById("btnNotif").classList.toggle("hidden", !signedIn);
+  document.getElementById("btnProfile").classList.toggle("hidden", !signedIn);
+  if (!signedIn) return;
   const me = state.me;
-  document.getElementById("profAvatar").outerHTML = `<span class="avatar sm" id="profAvatar" style="background:${me.color};">${escapeHtml(initialsOf(me.name))}</span>`;
-  document.getElementById("composerName").textContent = me.name.split(" ")[0];
+  const profAvatar = document.getElementById("profAvatar");
+  profAvatar.style.background = me.color;
+  profAvatar.textContent = initialsOf(me.name);
   const unread = state.notifications.filter(n => n.unread).length;
   document.getElementById("notifBadge").textContent = unread > 0 ? (unread > 9 ? "9+" : String(unread)) : "";
+}
+
+// ==================== COMPOSER (in-feed) ====================
+function renderComposer() {
+  const composerOpen = document.getElementById("composerOpen");
+  const composerAvatar = document.getElementById("composerAvatar");
+  if (state.me) {
+    composerOpen.textContent = `Share a take, ${state.me.name.split(" ")[0]}...`;
+    composerAvatar.style.background = state.me.color;
+    composerAvatar.textContent = initialsOf(state.me.name);
+  } else {
+    composerOpen.textContent = "Sign up to share your take";
+    composerAvatar.style.background = "var(--brand)";
+    composerAvatar.textContent = "?";
+  }
+}
+
+function requireAuth() {
+  if (state.me) return true;
+  setMode(false);
+  showWelcome();
+  return false;
 }
 
 // ==================== LEFT RAIL ====================
 function renderLeftRail() {
   const rail = document.getElementById("leftRail");
-  if (!state.me) { rail.innerHTML = ""; return; }
   const me = state.me;
   rail.innerHTML = `
-    <div class="rail-item">
-      ${avatarHTML(me)}
-      <div class="full"><div class="label">${escapeHtml(me.name)}</div></div>
-    </div>
+    ${me
+      ? `<div class="rail-item">
+          ${avatarHTML(me)}
+          <div class="full"><div class="label">${escapeHtml(me.name)}</div></div>
+        </div>`
+      : `<div class="rail-item" id="leftLogin" style="background: var(--brand-soft); color: var(--brand);">
+          <span class="ico" style="background: var(--brand); color: #fff;">${I.newspaper}</span>
+          <div class="full"><div class="label">Log in to participate</div><div class="sub">Reading is free · sign up to post</div></div>
+        </div>`
+    }
     <div class="rail-item"><span class="ico">${I.newspaper}</span><div class="full"><div class="label">News feed</div></div></div>
     <div class="rail-item"><span class="ico">${I.trend}</span><div class="full"><div class="label">Trending</div></div></div>
     <div class="rail-item"><span class="ico">${I.tag}</span><div class="full"><div class="label">Issues</div></div></div>
@@ -1590,13 +1657,12 @@ function renderRightRail() {
 // ==================== STORIES ====================
 function renderStories() {
   const wrap = document.getElementById("stories");
-  if (!state.me) { wrap.innerHTML = ""; return; }
   const me = state.me;
   wrap.innerHTML = `
     <div class="story-tile create" id="storyCreate">
-      <div class="photo">${escapeHtml(initialsOf(me.name))}</div>
+      <div class="photo">${me ? escapeHtml(initialsOf(me.name)) : "+"}</div>
       <div class="footer">
-        Create story
+        ${me ? "Create story" : "Sign up"}
         <span class="plus"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></span>
       </div>
     </div>
@@ -1867,6 +1933,7 @@ function attachReactionEvents(container) {
 }
 
 function setReaction(postId, reactionId) {
+  if (!requireAuth()) return;
   const counts = state.reactionCounts[postId] = state.reactionCounts[postId] || {};
   const prev = state.reactions[postId];
   if (prev === reactionId) {
@@ -1888,6 +1955,7 @@ function toggleComments(postId) {
 }
 
 function submitComment(postId) {
+  if (!requireAuth()) return;
   const input = document.querySelector(`[data-comment-input="${postId}"]`);
   if (!input) return;
   const text = input.value.trim();
@@ -1902,6 +1970,7 @@ function submitComment(postId) {
 }
 
 function votePoll(pollId, optionId) {
+  if (!requireAuth()) return;
   const poll = POLLS.find(p => p.id === pollId);
   if (!poll || state.votes[pollId]) return;
   const counts = state.pollCounts[pollId] = state.pollCounts[pollId] || (() => {
@@ -1936,7 +2005,7 @@ function renderTopicPicker() {
 }
 
 function openComposer() {
-  if (!state.me) { showWelcome(); return; }
+  if (!requireAuth()) return;
   pendingTopic = null; pendingImage = null;
   postText.value = "";
   postPreview.style.display = "none";
@@ -2109,6 +2178,11 @@ function wireEvents() {
     toggleDropdown(ddProfile);
   });
   document.getElementById("btnPro").addEventListener("click", openPro);
+  document.getElementById("btnLogin").addEventListener("click", () => { setMode(true); showWelcome(); });
+  document.getElementById("btnSignup").addEventListener("click", () => { setMode(false); showWelcome(); });
+  document.getElementById("welcomeClose").addEventListener("click", hideWelcome);
+  document.getElementById("browseLink").addEventListener("click", hideWelcome);
+  welcome.addEventListener("click", (e) => { if (e.target === welcome) hideWelcome(); });
   document.getElementById("proSubscribe").addEventListener("click", subscribePro);
   proModal.addEventListener("click", (e) => { if (e.target === proModal || e.target.closest("[data-close]")) closePro(); });
 
@@ -2259,11 +2333,13 @@ async function initApp() {
   renderLeftRail();
   renderRightRail();
   renderStories();
+  renderComposer();
   renderNotifications();
-  renderFeed();    // initially shows skeletons
-  // Fetch headlines
-  await fetchPoliticalNews();
   renderFeed();
+  if (state.newsArticles.length === 0) {
+    await fetchPoliticalNews();
+    renderFeed();
+  }
 }
 
 function init() {
@@ -2271,8 +2347,7 @@ function init() {
   applyTheme();
   setMode(false);
   wireEvents();
-  if (!state.me) showWelcome();
-  else initApp();
+  initApp();   // Always render — anyone can read without signing in
 }
 
 document.addEventListener("DOMContentLoaded", init);
