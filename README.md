@@ -1,24 +1,43 @@
 # AOK Catalog
 
-> *Politics, decoded — for citizens, not algorithms.*
-
-A politics-first community web app: news feed, topic tags, candidate browsing, live polls, election countdown, and member-driven discussion. Single self-contained HTML file. Navy / red / cream civic palette.
+A politics-first social network. Facebook-style three-column layout, green palette, with **live political headlines pulled from the GDELT Doc API** mixed into the feed. Single self-contained HTML file.
 
 ## Features
 
-- **Sign-up flow** — name, email, location, plus an "issues you follow" picker
-- **Topic-tagged posts** — every post can be tagged with an issue (Economy, Healthcare, Foreign Policy, Climate, Civil Rights, Elections, Education, Immigration, Tech & AI, Housing, Courts, Energy)
-- **Civic-tuned reactions** — Up · Strong agree · Haha · Whoa · Sad · Strong disagree
-- **Comments** — threaded discussion under every post
-- **Live polls** — one-vote-per-device, real-time percentages with seeded baseline counts
-- **Election countdown** — to the next U.S. midterm (Nov 3, 2026)
-- **Trending topics** — curated topic categories surfaced in the right rail
-- **Sponsored slot** — clearly labeled ad placement (revenue surface #1)
-- **Catalog Pro tease** — premium subscription modal at $9/mo, ad-free + premium analysis (revenue surface #2)
-- **Search** — type-ahead across topics, members, and posts
+- **Live political news in the feed** — top US headlines fetched on load from the [GDELT Doc API](https://api.gdeltproject.org/api/v2/doc/doc) (free, no key, CORS-enabled). News cards include source, image, headline, and a "Read the full story →" link to the original article. Inferred topic tag (Elections / Economy / Climate / etc.) per headline. Refresh button at the top of the feed.
+- **Facebook-style layout** — sticky three-column shell with stories strip, composer, news feed, left/right rails
+- **Green palette** — brand `#1d8a3e`, brand-soft `#e6f3ea`, soft greens throughout
+- **Sign-up flow** — name + optional email + city/state
+- **Compose your own takes** — text + photo upload + optional topic tag
+- **Reactions** — full 7-emoji picker (Like, Love, Haha, Wow, Sad, Angry)
+- **Comments** — open under any post (yours or a news headline)
+- **Live polls** — one-vote-per-device with animated percentage bars
+- **Election countdown** — days until Nov 3, 2026 midterms
+- **Trending topics** — both as story tiles and right-rail rows
+- **Sponsored slot** in right rail (revenue surface #1)
+- **Catalog Pro tease** — $9/mo modal that hides ads when "subscribed" (revenue surface #2)
+- **Search** — type-ahead across topics, headlines, and members
 - **Dark mode** — toggle persists
-- **Empty states** throughout — no fake people, no synthetic content
-- **Zero dependencies** — single HTML file, no build, no CDN, no API keys
+- **Zero dependencies** — single HTML file, no build, no CDN, no API key (GDELT is free)
+
+## How the news feed works
+
+On every load (and when you click Refresh), the app calls:
+
+```
+https://api.gdeltproject.org/api/v2/doc/doc
+  ?query=politics OR election OR congress OR senate OR "white house"
+  &mode=artlist&maxrecords=20&format=json
+  &sort=datedesc&sourcecountry=US&sourcelang=eng
+```
+
+It maps each article to a card with `{ source, title, image, url, time, issue }`. The issue tag is inferred from a regex over the headline text. If the API request fails (offline, blocked, or rate-limited), the feed shows your own posts only — no fake fallback content.
+
+GDELT updates roughly every 15 minutes and indexes thousands of news outlets globally. To narrow or change the focus, edit the `query` string in `fetchPoliticalNews()`.
+
+## Swap or extend the news source
+
+The `fetchPoliticalNews()` function is the only integration point. To use a different API (NewsAPI, Guardian, Mediastack, an RSS proxy via allorigins.win, etc.), replace its body — keep the same return shape (`state.newsArticles` filled with `{ id, kind: "news", source, title, image, url, time, issue }` objects).
 
 ## Monetization model (modeled, not active)
 
@@ -31,7 +50,7 @@ The UI demonstrates two revenue paths a politics-themed publisher commonly uses:
 
 ## Important: still frontend-only
 
-All accounts and posts live in the browser's `localStorage`. Friends on different devices won't see each other's content until you add a backend (Supabase, Firebase, Vercel KV/Postgres). The frontend is structured so the persistence layer can be swapped without rewriting the UI.
+User accounts, posts, comments, and reactions live in the browser's `localStorage`. Friends on different devices won't see each other's posts until you add a backend (Supabase, Firebase, Vercel KV/Postgres). The frontend is structured so the persistence layer can be swapped without rewriting the UI. **The news feed itself is global** — every visitor sees the same headlines because they come from a public API.
 
 ## Run Locally
 
